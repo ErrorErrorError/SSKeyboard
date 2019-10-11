@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13460623234E5F2F0058CCA1 /* SSKeyboardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 13460622234E5F2F0058CCA1 /* SSKeyboardTest.m */; };
+		13460625234E5F2F0058CCA1 /* libSSKeyboard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13460618234E5F230058CCA1 /* libSSKeyboard.a */; };
+		1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1385114C233FAE76001E4CA6 /* sskeyboard.cpp */; };
+		1346062C234E5F670058CCA1 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A33223412BB900947195 /* IOKit.framework */; };
+		1346062D234E5F6D0058CCA1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A34923412DAE00947195 /* CoreFoundation.framework */; };
+		13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 13851150233FAE76001E4CA6 /* sskeyboard.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		13460626234E5F2F0058CCA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1368D30E233F9A1F00CE1F4D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13460617234E5F230058CCA1;
+			remoteInfo = SSKeyboard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		13B633E6234E615D0094FCC9 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1302A33223412BB900947195 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		1302A34923412DAE00947195 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		13460618234E5F230058CCA1 /* libSSKeyboard.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSSKeyboard.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		13460620234E5F2F0058CCA1 /* SSKeyboardTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SSKeyboardTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		13460622234E5F2F0058CCA1 /* SSKeyboardTest.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = SSKeyboardTest.m; sourceTree = "<group>"; };
+		13460624234E5F2F0058CCA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1385114C233FAE76001E4CA6 /* sskeyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sskeyboard.cpp; sourceTree = "<group>"; };
+		13851150233FAE76001E4CA6 /* sskeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sskeyboard.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13460616234E5F230058CCA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1346062D234E5F6D0058CCA1 /* CoreFoundation.framework in Frameworks */,
+				1346062C234E5F670058CCA1 /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1346061D234E5F2F0058CCA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13460625234E5F2F0058CCA1 /* libSSKeyboard.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1302A320234129D600947195 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1302A34923412DAE00947195 /* CoreFoundation.framework */,
+				1302A33223412BB900947195 /* IOKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		13460621234E5F2F0058CCA1 /* SSKeyboardTest */ = {
+			isa = PBXGroup;
+			children = (
+				13460622234E5F2F0058CCA1 /* SSKeyboardTest.m */,
+				13460624234E5F2F0058CCA1 /* Info.plist */,
+			);
+			path = SSKeyboardTest;
+			sourceTree = "<group>";
+		};
+		1368D30D233F9A1F00CE1F4D = {
+			isa = PBXGroup;
+			children = (
+				13851144233FAE6E001E4CA6 /* SSKeyboard */,
+				13460621234E5F2F0058CCA1 /* SSKeyboardTest */,
+				1302A320234129D600947195 /* Frameworks */,
+				13460618234E5F230058CCA1 /* libSSKeyboard.a */,
+				13460620234E5F2F0058CCA1 /* SSKeyboardTest.xctest */,
+			);
+			sourceTree = "<group>";
+		};
+		13851144233FAE6E001E4CA6 /* SSKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				1385114C233FAE76001E4CA6 /* sskeyboard.cpp */,
+				13851150233FAE76001E4CA6 /* sskeyboard.h */,
+			);
+			path = SSKeyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		13460617234E5F230058CCA1 /* SSKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13460619234E5F230058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboard" */;
+			buildPhases = (
+				13460615234E5F230058CCA1 /* Sources */,
+				13460616234E5F230058CCA1 /* Frameworks */,
+				13B633E6234E615D0094FCC9 /* Copy Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SSKeyboard;
+			productName = SSKeyboard;
+			productReference = 13460618234E5F230058CCA1 /* libSSKeyboard.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		1346061F234E5F2F0058CCA1 /* SSKeyboardTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13460628234E5F2F0058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboardTest" */;
+			buildPhases = (
+				1346061C234E5F2F0058CCA1 /* Sources */,
+				1346061D234E5F2F0058CCA1 /* Frameworks */,
+				1346061E234E5F2F0058CCA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13460627234E5F2F0058CCA1 /* PBXTargetDependency */,
+			);
+			name = SSKeyboardTest;
+			productName = SSKeyboardTest;
+			productReference = 13460620234E5F2F0058CCA1 /* SSKeyboardTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1368D30E233F9A1F00CE1F4D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1030;
+				LastUpgradeCheck = 1030;
+				ORGANIZATIONNAME = ErrorErrorError;
+				TargetAttributes = {
+					13460617234E5F230058CCA1 = {
+						CreatedOnToolsVersion = 10.3;
+						LastSwiftMigration = 1030;
+					};
+					1346061F234E5F2F0058CCA1 = {
+						CreatedOnToolsVersion = 10.3;
+					};
+				};
+			};
+			buildConfigurationList = 1368D311233F9A1F00CE1F4D /* Build configuration list for PBXProject "SSKeyboard" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 1368D30D233F9A1F00CE1F4D;
+			productRefGroup = 1368D30D233F9A1F00CE1F4D;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				13460617234E5F230058CCA1 /* SSKeyboard */,
+				1346061F234E5F2F0058CCA1 /* SSKeyboardTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1346061E234E5F2F0058CCA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		13460615234E5F230058CCA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1346061C234E5F2F0058CCA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13460623234E5F2F0058CCA1 /* SSKeyboardTest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		13460627234E5F2F0058CCA1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13460617234E5F230058CCA1 /* SSKeyboard */;
+			targetProxy = 13460626234E5F2F0058CCA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1346061A234E5F230058CCA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FYT4JTMSQ8;
+				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SSKeyboard/SSKeyboard-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1346061B234E5F230058CCA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FYT4JTMSQ8;
+				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SSKeyboard/SSKeyboard-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		13460629234E5F2F0058CCA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FYT4JTMSQ8;
+				INFOPLIST_FILE = SSKeyboardTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.errorerrorerror.SSKeyboardTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1346062A234E5F2F0058CCA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FYT4JTMSQ8;
+				INFOPLIST_FILE = SSKeyboardTest/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.errorerrorerror.SSKeyboardTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1368D31B233F9A1F00CE1F4D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1368D31C233F9A1F00CE1F4D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		13460619234E5F230058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1346061A234E5F230058CCA1 /* Debug */,
+				1346061B234E5F230058CCA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13460628234E5F2F0058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboardTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13460629234E5F2F0058CCA1 /* Debug */,
+				1346062A234E5F2F0058CCA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1368D311233F9A1F00CE1F4D /* Build configuration list for PBXProject "SSKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1368D31B233F9A1F00CE1F4D /* Debug */,
+				1368D31C233F9A1F00CE1F4D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1368D30E233F9A1F00CE1F4D /* Project object */;
+}
