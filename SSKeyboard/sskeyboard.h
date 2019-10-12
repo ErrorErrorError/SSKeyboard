@@ -227,6 +227,7 @@ public:
     KeyboardModels getKeyboardModel();
     IOReturn setSteadyMode(uint8_t region, RGB regionColor , RGB *colorArray, bool createOutputPacket);
     IOReturn closeKeyboardPort();
+    void setSleepInMillis(uint16_t millis);
     IOReturn exit();
 };
 #endif

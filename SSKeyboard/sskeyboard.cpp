@@ -12,7 +12,7 @@
 #include <thread>
 using namespace std;
 
-int times = 200;
+uint16_t times = 500;
 
 static CFMutableDictionaryRef createPerKeyMatchingDictionary(uint16_t vendorID, uint16_t productID, uint16_t maxFeatureReport, uint16_t usagePage)
 {
@@ -295,6 +295,9 @@ IOReturn SSKeyboard::exit() {
     }
     
     return kIOReturnSuccess;
+}
+void SSKeyboard::setSleepInMillis(uint16_t millis) {
+    times = millis;
 }
 
 KeyboardModels SSKeyboard::getKeyboardModel(){
