@@ -145,7 +145,7 @@ IOReturn SSKeyboard::checkThreeRegion() {
 }
 
 IOReturn SSKeyboard::sendFeatureReportPackage(uint8_t *featurePackage) {
-    return (usbOpen)? IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeFeature, featurePackage[0], featurePackage, kPackageSize) : kIOReturnNotOpen;
+    return (usbOpen)? IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeFeature, featurePackage[0], featurePackage, kFeaturePackageSize) : kIOReturnNotOpen;
 }
 
 IOReturn SSKeyboard::sendOutputReportPackage(uint8_t *outputPackage) {
@@ -231,7 +231,7 @@ uint8_t *SSKeyboard::makeColorPackage(uint8_t region, RGB color, RGB *colorArray
         keycodes_size = kSpecialPerKeySize;
     }
     
-    memset(new_packet, 0, kPackageSize);
+    memset(new_packet, 0, kFeaturePackageSize);
     
     new_packet[0] = 0x0e;
     //new_packet[1] = 0x00;

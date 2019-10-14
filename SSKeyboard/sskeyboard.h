@@ -10,13 +10,9 @@
 #include <IOKit/hid/IOHIDKeys.h>
 #include <stdlib.h>
 
-#ifdef __cplusplus
-#include <string>
-#endif
-
-#define kPackageSize            0x20c   // 524
+// Package size for Feature and Output Request
+#define kFeaturePackageSize     0x20c   // 524
 #define kOutputPackageSize      0x40    // 64
-#define kInputPackageSize       0x08    // 8
 
 #define kRegions                0x04    // 4
 
@@ -65,11 +61,21 @@ struct Keys {
 }
 #endif
 
+// Model of keyboard
 enum KeyboardModels {
     PerKey,
     PerKeyGS65,
     ThreeRegion,
     UnknownModel
+};
+
+// Modes for PerKey/GS65
+enum PerKeyModes {
+    Steady,
+    ColorShift,
+    Breathing,
+    Reactive,
+    Disabled
 };
 
 // GS65 & PerKey Region keys
@@ -243,7 +249,7 @@ private:
     IOHIDManagerRef hidManagerRef;
     IOHIDDeviceRef keyboardDevice;
     enum KeyboardModels model = UnknownModel;
-    uint8_t new_packet[kPackageSize];
+    uint8_t new_packet[kFeaturePackageSize];
     bool usbOpen = false;
     IOReturn sendFeatureReportPackage(uint8_t *featurePackage);
     IOReturn sendOutputReportPackage(uint8_t *outputPackage);
