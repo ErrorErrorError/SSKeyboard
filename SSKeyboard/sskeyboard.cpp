@@ -7,14 +7,13 @@
 //
 
 #include "sskeyboard.h"
-
 #include <chrono>
 #include <thread>
 using namespace std;
 
 uint16_t times = 500;
 
-static CFMutableDictionaryRef createPerKeyMatchingDictionary(uint16_t vendorID, uint16_t productID, uint16_t maxFeatureReport, uint16_t usagePage)
+static CFMutableDictionaryRef createMatchingDictionaryForKeyboard(uint16_t vendorID, uint16_t productID, uint16_t maxFeatureReport, uint16_t usagePage, uint16_t versionNumber)
 {
     // create a dictionary to add usage page/usages to
     CFMutableDictionaryRef result = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
@@ -43,38 +42,47 @@ static CFMutableDictionaryRef createPerKeyMatchingDictionary(uint16_t vendorID, 
         CFRelease(usagePageCFNumberRef);
     }
     
+    CFNumberRef versionNumberCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &versionNumber);
+    if (versionNumberCFNumberRef) {
+        CFDictionarySetValue(result, CFSTR(kIOHIDVersionNumberKey), versionNumberCFNumberRef);
+        CFRelease(versionNumberCFNumberRef);
+    }
+    
     return result;
 }
 
 SSKeyboard::SSKeyboard() {
     
+    // Initializes hidManagerRef
     hidManagerRef = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-
-    IOReturn isKeyboardPerKeyGS65 = checkPerKeyGS65();
+    
+    // Checks if keyboard is a GS65
+    CFDictionaryRef matchingGS65 = createMatchingDictionaryForKeyboard(kVendorId, kProductId, kMaxFeatureReportSize, kPrimaryUsagePage, kGS65VersionNumber);
+    
+    IOReturn isKeyboardPerKeyGS65 = checkForDevice(matchingGS65);
     if (isKeyboardPerKeyGS65 == kIOReturnSuccess) {
         model = PerKeyGS65;
         return;
     }
    
-    IOReturn isKeyboardPerKey = checkPerKey();
+    // Checks if keyboard is a Per Key Model other than GS65. GS65 uses a different keyboard version
+    CFDictionaryRef matchingPerKey = createMatchingDictionaryForKeyboard(kVendorId, kProductId, kMaxFeatureReportSize, kPrimaryUsagePage, kPerKeyVersionNumber);
+    IOReturn isKeyboardPerKey = checkForDevice(matchingPerKey);
     if (isKeyboardPerKey == kIOReturnSuccess) {
         model = PerKey;
         return;
     }
     
+    // This is not implemented yet
     IOReturn isKeyboardThreeRegion = checkThreeRegion();
     if (isKeyboardThreeRegion == kIOReturnSuccess) {
         model = ThreeRegion;
         return;
     }
-    
-    
 }
 
-IOReturn SSKeyboard::checkPerKeyGS65() {
-    CFDictionaryRef matchingCFDictRef = createPerKeyMatchingDictionary(kVendorId, kProductId, kMaxFeatureReportSize, kPrimaryUsagePage);
+IOReturn SSKeyboard::checkForDevice(CFDictionaryRef matchingCFDictRef) { 
     IOHIDManagerSetDeviceMatching(hidManagerRef, matchingCFDictRef);
-    
     if (matchingCFDictRef) {
         CFRelease(matchingCFDictRef);
     }
@@ -90,7 +98,9 @@ IOReturn SSKeyboard::checkPerKeyGS65() {
     
     CFIndex deviceCount = CFSetGetCount(deviceSetRef);
     
+    
     IOHIDDeviceRef *deviceRef = (IOHIDDeviceRef *) malloc( sizeof( IOHIDDeviceRef ) * deviceCount);
+     
     if (!deviceRef) {
         CFRelease(deviceSetRef);
         deviceSetRef = NULL;
@@ -113,6 +123,9 @@ IOReturn SSKeyboard::checkPerKeyGS65() {
         keyboardDevice = deviceRef[i];
     }
     
+    // We don't need deviceRef anymore since keyboardDevices has the reference.
+    free(deviceRef);
+    
     IOReturn openSuccessful = IOHIDDeviceOpen(keyboardDevice, kIOHIDOptionsTypeNone);
     if (openSuccessful != kIOReturnSuccess) {
         printf("Could not open usb port");
@@ -120,14 +133,10 @@ IOReturn SSKeyboard::checkPerKeyGS65() {
         return kIOReturnNotOpen;
     }
     
-    usbOpen = true;
     
+    
+    usbOpen = true;
     return kIOReturnSuccess;
-}
-
-// not implemented since I need to distingush from gs65 keyboard to ither per-key models
-IOReturn SSKeyboard::checkPerKey() {
-    return kIOReturnError;
 }
 
 // not implemented since I still haven't had time to read values of three region based keyboard
@@ -158,7 +167,7 @@ uint8_t *SSKeyboard::makeOutputPackage(uint8_t region) {
     newOutputPackage[0] = 0x0d;
     newOutputPackage[1] = 0x00;
     newOutputPackage[2] = 0x02;
-    newOutputPackage[kOutputPackageSize - 1] = region;
+    newOutputPackage[kOutputPackageSize - 1] = lastByteRegion;
     return newOutputPackage;
 }
 
@@ -192,49 +201,41 @@ IOReturn SSKeyboard::setSteadyMode(uint8_t region, RGB regionColor , RGB *colorA
 }
 
 uint8_t *SSKeyboard::makeColorPackage(uint8_t region, RGB color, RGB *colorArray) {
-    uint8_t region_code = region;
     uint8_t *keycodes;
-    // uint8_t *null_keycodes;
     uint8_t keycodes_size;
-    uint8_t size_null;
-    
-    if (region_code == regions[0])
+
+    if (region == regions[0])
     {
         keycodes = modifiers;
         keycodes_size = kModifiersSize;
-        // null_keycodes = null_modifiers;
-        size_null = kNullModifiers;
     }
     
-    else if (region_code == regions[1])
+    else if (region == regions[1])
     {
         keycodes = alphanums;
         keycodes_size = kAlphanumsSize;
-        // null_keycodes = null_alphanums;
-        size_null = kNullAlphanums;
     }
     
-    else if (region_code == regions[2])
+    else if (region == regions[2])
     {
         keycodes = enter;
         keycodes_size = kEnterSize;
-        // null_keycodes = null_enter;
-        size_null = kNullEnter;
     }
     
-    else
+    else if (model == PerKeyGS65)
     {
         keycodes = special;
         keycodes_size = kSpecialSize;
-        // null_keycodes = null_special;
-        size_null = kNullSpecial;
+    } else {
+        keycodes = specialPerKey;
+        keycodes_size = kSpecialPerKeySize;
     }
     
     memset(new_packet, 0, kPackageSize);
     
     new_packet[0] = 0x0e;
     //new_packet[1] = 0x00;
-    new_packet[2] = region_code;
+    new_packet[2] = region;
     //new_packet[3] = 0x00;
     new_packet[4] = color.r;
     new_packet[5] = color.g;
@@ -242,37 +243,26 @@ uint8_t *SSKeyboard::makeColorPackage(uint8_t region, RGB color, RGB *colorArray
     //new_packet[7] = 0x00;
     //new_packet[8] = 0x00;
     //new_packet[9] = 0x00;
+    new_packet[10] = 0x2c;
+    new_packet[11] = 0x01;
+
     for (uint8_t i = 0; i < keycodes_size; i++)
     {
-        // the first 10 bytes are for the region
-        uint16_t arrLocation = 10 + 12 * i;
-        
-        new_packet[arrLocation] = 0x2c;
-        new_packet[arrLocation + 1] = 0x01;
+        uint16_t keys = 12 + 12 * i;
+        new_packet[keys] = 0x00;
+        new_packet[keys + 1] = 0x01;
         //new_packet[arrLocation + 2] = 0x00;
-        new_packet[arrLocation + 3] = 0x01;
-        //new_packet[arrLocation + 4] = 0x00;
-        new_packet[arrLocation + 5] = keycodes[i];
-        new_packet[arrLocation + 6] = colorArray[i].r;
-        new_packet[arrLocation + 7] = colorArray[i].g;
-        new_packet[arrLocation + 8] = colorArray[i].b;
-
+        new_packet[keys + 3] = keycodes[i];
+        new_packet[keys + 4] = colorArray[i].r;
+        new_packet[keys + 5] = colorArray[i].g;
+        new_packet[keys + 6] = colorArray[i].b;
+        //new_packet[arrLocation + 7] = 0x00;
+        //new_packet[arrLocation + 8] = 0x00;
         //new_packet[arrLocation + 9] = 0x00;
-        //new_packet[arrLocation + 10] = 0x00;
-        //new_packet[arrLocation + 11] = 0x00;
-        
-        /*
-        for (uint8_t k = 0; k < size_null; k++) {
-            if (null_keycodes[k] == keycodes[i]) {
-                new_packet[arrLocation + 5] = keycodes[i];
-                new_packet[arrLocation + 6] = 0x00;
-                new_packet[arrLocation + 7] = 0x00;
-                new_packet[arrLocation + 8] = 0x00;
-                break;
-            }
-        }
-         */
+        new_packet[keys + 10] = 0x2c;
+        new_packet[keys + 11] = 0x01;
     }
+    
     return new_packet;
 }
 
@@ -304,30 +294,34 @@ KeyboardModels SSKeyboard::getKeyboardModel(){
     return model;
 }
 
-uint8_t findKeyInRegion(uint8_t findThisKey) {
-    for (uint8_t key = 0; key < kModifiersSize; key++) {
-        if (modifiers[key] == findThisKey ) {
-            return regions[0];
+uint8_t SSKeyboard::findKeyInRegion(uint8_t findThisKey) {
+    if (model != ThreeRegion) {
+        for (uint8_t key = 0; key < kModifiersSize; key++) {
+            if (modifiers[key] == findThisKey ) {
+                return regions[0];
+            }
         }
-    }
-    
-    for (uint8_t key = 0; key < kAlphanumsSize; key++) {
-        if (alphanums[key] == findThisKey ) {
-            return regions[1];
+        
+        for (uint8_t key = 0; key < kAlphanumsSize; key++) {
+            if (alphanums[key] == findThisKey ) {
+                return regions[1];
+            }
         }
-    }
-    
-    for (uint8_t key = 0; key < kEnterSize; key++) {
-        if (enter[key] == findThisKey ) {
-            return regions[2];
+        
+        for (uint8_t key = 0; key < kEnterSize; key++) {
+            if (enter[key] == findThisKey ) {
+                return regions[2];
+            }
         }
-    }
-    
-    for (uint8_t key = 0; key < kSpecialSize; key++) {
-        if (special[key] == findThisKey ) {
-            return regions[3];
+        
+        for (uint8_t key = 0; key < kSpecialPerKeySize; key++) {
+            if (specialPerKey[key] == findThisKey ) {
+                return regions[3];
+            }
         }
+
+    } else {
+        // TODO - need to implement ThreeRegion
     }
-    
     return 0;
 }

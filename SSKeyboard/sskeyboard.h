@@ -6,49 +6,61 @@
 //  Copyright © 2019 ErrorErrorError. All rights reserved.
 //
 
-// #ifndef sskeyboard_h
-// #define sskeyboard_h
-
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <stdlib.h>
 
-#define kPackageSize    0x20c
-#define kOutputPackageSize 0x40
-#define kInputPackageSize 0x08
+#ifdef __cplusplus
+#include <string>
+#endif
 
-#define kRegions        0x04
+#define kPackageSize            0x20c   // 524
+#define kOutputPackageSize      0x40    // 64
+#define kInputPackageSize       0x08    // 8
 
-// Size of keys
-#define kModifiersSize  0x18
-#define kAlphanumsSize  0x2a
-#define kEnterSize      0xb
-#define kSpecialSize    0x13
+#define kRegions                0x04    // 4
 
-// Null Values
-#define kNullModifiers  0x02
-#define kNullAlphanums  0x01
-#define kNullEnter      0x09
-#define kNullSpecial    0x04
+// Size of keys - GS65
+#define kModifiersSize          0x18    // 24
+#define kAlphanumsSize          0x2a    // 42
+#define kEnterSize              0xb     // 11
+#define kSpecialSize            0x13    // 19
+
+// Size of keys - PerKey
+#define kSpecialPerKeySize      0x24    // 36
+
+// Per-Key & GS65 Matching
+#define kVendorId               0x1038  // 4152
+#define kProductId              0x1122  // 4386
+#define kMaxFeatureReportSize   0x20c   // 524
+#define kPrimaryUsagePage       0xffc0  // 65472
 
 // GS65 Matching
-#define kVendorId       0x1038
-#define kProductId      0x1122
-#define kMaxFeatureReportSize 0x20c
-#define kPrimaryUsagePage 0xffc0
+#define kGS65VersionNumber      0x229   // 553
+
+// Per-Key Matching
+#define kPerKeyVersionNumber    0x230   // 560
+
+// TODO Three Region Matching
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-uint8_t findKeyInRegion(uint8_t findThisKey);
-
+    
 struct RGB {
     uint8_t r;
     uint8_t g;
     uint8_t b;
 };
-
+    
+struct Keys {
+    uint8_t key;
+    char * keyLetter;
+    uint8_t region;
+    struct RGB color;
+    uint8_t mode;
+};
+    
 #ifdef __cplusplus
 }
 #endif
@@ -60,11 +72,13 @@ enum KeyboardModels {
     UnknownModel
 };
 
+// GS65 & PerKey Region keys
 static uint8_t regions[kRegions] = {
     0x18,   // esc (modifiers)
     0x2a,   // a (alphanums)
     0x0b,   // enter (enter)
-    0x13};  // f7 (special/numpads)
+    0x24    // f7 (special/numpad)
+};
 
 static uint8_t last_byte_region[kRegions] = {
     0x2d,   // last byte modifier
@@ -73,6 +87,7 @@ static uint8_t last_byte_region[kRegions] = {
     0x44    // last byte special
 };
 
+// GS65 & PerKey modifier keys
 static uint8_t modifiers[kModifiersSize] = {
     0x29,   // backspace
     0x2a,   // tab
@@ -99,6 +114,7 @@ static uint8_t modifiers[kModifiersSize] = {
     0xe6,   // fn
     0xf0};  // NULL
 
+// GS65 and PerKey alphanum keys
 static uint8_t alphanums[kAlphanumsSize] = {
     0x04,   // b
     0x05,   // c
@@ -143,6 +159,7 @@ static uint8_t alphanums[kAlphanumsSize] = {
     0x3e,   // f6
     0x3f};  // NULL
 
+// GS65 and PerKey - Enter Keys
 static uint8_t enter[kEnterSize] = {
     0x28,   // backslash
     0x31,   // NULL
@@ -156,6 +173,7 @@ static uint8_t enter[kEnterSize] = {
     0x90,   // NULL
     0x91};  // NULL
 
+// GS65 Special keys
 static uint8_t special[kSpecialSize] = {
     0x40,   // F8
     0x41,   // F9
@@ -176,34 +194,47 @@ static uint8_t special[kSpecialSize] = {
     0x50,   // down arrow
     0x51,   // up arrow
     0x52};  // NULL
-/*
-static uint8_t null_modifiers[kNullModifiers] = {
-    0x39,   // NULL
-    0xf0};  // NULL
 
-static uint8_t null_alphanums[kNullAlphanums] = {
-    0x3f};  // NULL
+// Similar to GS65 special keys, except that it has 17 more keys (since it has numpad)
+static uint8_t specialPerKey[kSpecialPerKeySize] = {
+    0x40,   // F8
+    0x41,   // F9
+    0x42,   // F10
+    0x43,   // F11
+    0x44,   // F12
+    0x45,   // prtscr
+    0x46,   // scroll lock
+    0x47,   // pause/break
+    0x48,   // insert
+    0x49,   // NULL
+    0x4a,   // pgup
+    0x4b,   // delete
+    0x4c,   // NLL
+    0x4d,   // pgdn
+    0x4e,   // right arrow
+    0x4f,   // left arrow
+    0x50,   // down arrow
+    0x51,   // up arrow
+    0x52,   // num lock
+    0x53,   // / - numpad
+    0x54,   // * - numpad
+    0x55,   // minus - numpad
+    0x56,   // plus - numpad
+    0x57,   // enter - numpad
+    0x58,   // 1 - numpad
+    0x59,   // 2 - numpad
+    0x5a,   // 3 - numpad
+    0x5b,   // 4 - numpad
+    0x5c,   // 5 - numpad
+    0x5d,   // 6 - numpad
+    0x5e,   // 7 - numpad
+    0x5f,   // 8 - numpad
+    0x60,   // 9 - numpad
+    0x61,   // 0 - numpad
+    0x62,   // . - numpad
+    0x63    // NULL
+};
 
-static uint8_t null_enter[kNullEnter] = {
-    0x31,   // NULL
-    0x64,   // NULL
-    0x87,   // NULL
-    0x88,   // NULL
-    0x89,   // NULL
-    0x8A,   // NULL
-    0x8B,   // NULL
-    0x90,   // NULL
-    0x91};  // NULL
-static uint8_t null_special[kNullSpecial] = {
-    0x46,   // NULL
-    0x47,   // NULL
-    0x48,   // NULL
-    0x52};  // NULL
- */
-
-// #ifdef  __cplusplus
-
-#pragma mark - function
 #ifdef __cplusplus
 
 class SSKeyboard {
@@ -218,8 +249,7 @@ private:
     IOReturn sendOutputReportPackage(uint8_t *outputPackage);
     uint8_t *makeColorPackage(uint8_t region, RGB color, RGB *colorArray);
     uint8_t *makeOutputPackage(uint8_t region);
-    IOReturn checkPerKeyGS65();
-    IOReturn checkPerKey();
+    IOReturn checkForDevice(CFDictionaryRef matchingCFDictRef);
     IOReturn checkThreeRegion();
 public:
     SSKeyboard();
@@ -229,9 +259,6 @@ public:
     IOReturn closeKeyboardPort();
     void setSleepInMillis(uint16_t millis);
     IOReturn exit();
+    uint8_t findKeyInRegion(uint8_t findThisKey);
 };
 #endif
-
-
-#pragma mark - c wrapper
-// #endif /* sskeyboard_h */
