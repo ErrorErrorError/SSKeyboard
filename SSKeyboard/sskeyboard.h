@@ -5,13 +5,17 @@
 //  Created by Erik Bautista on 9/28/19.
 //  Copyright © 2019 ErrorErrorError. All rights reserved.
 //
+#ifndef sskeyboard_h
+#define sskeyboard_h
+#include "sskeys.h"
+#endif
 
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <stdlib.h>
 
 // Package size for Feature and Output Request
-#define kFeaturePackageSize     0x20c   // 524
+#define kPackageSize     0x20c   // 524
 #define kOutputPackageSize      0x40    // 64
 
 #define kRegions                0x04    // 4
@@ -39,43 +43,12 @@
 
 // TODO Three Region Matching
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    
-struct RGB {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-};
-    
-struct Keys {
-    uint8_t key;
-    char * keyLetter;
-    uint8_t region;
-    struct RGB color;
-    uint8_t mode;
-};
-    
-#ifdef __cplusplus
-}
-#endif
-
 // Model of keyboard
 enum KeyboardModels {
     PerKey,
     PerKeyGS65,
     ThreeRegion,
     UnknownModel
-};
-
-// Modes for PerKey/GS65
-enum PerKeyModes {
-    Steady,
-    ColorShift,
-    Breathing,
-    Reactive,
-    Disabled
 };
 
 // GS65 & PerKey Region keys
@@ -215,7 +188,7 @@ static uint8_t specialPerKey[kSpecialPerKeySize] = {
     0x49,   // NULL
     0x4a,   // pgup
     0x4b,   // delete
-    0x4c,   // NLL
+    0x4c,   // NULL
     0x4d,   // pgdn
     0x4e,   // right arrow
     0x4f,   // left arrow
@@ -249,22 +222,24 @@ private:
     IOHIDManagerRef hidManagerRef;
     IOHIDDeviceRef keyboardDevice;
     enum KeyboardModels model = UnknownModel;
-    uint8_t new_packet[kFeaturePackageSize];
+    uint8_t new_packet[kPackageSize];
     bool usbOpen = false;
     IOReturn sendFeatureReportPackage(uint8_t *featurePackage);
     IOReturn sendOutputReportPackage(uint8_t *outputPackage);
-    uint8_t *makeColorPackage(uint8_t region, RGB color, RGB *colorArray);
+    uint8_t *makeColorPackage(Keys **colorArray);
     uint8_t *makeOutputPackage(uint8_t region);
     IOReturn checkForDevice(CFDictionaryRef matchingCFDictRef);
     IOReturn checkThreeRegion();
+    void toByte(uint16_t speed, uint8_t * array);
 public:
     SSKeyboard();
     bool isUsbOpen();
     KeyboardModels getKeyboardModel();
-    IOReturn setSteadyMode(uint8_t region, RGB regionColor , RGB *colorArray, bool createOutputPacket);
+    IOReturn sendColorKeys(Keys **keysArray, bool createOutputPacket);
     IOReturn closeKeyboardPort();
     void setSleepInMillis(uint16_t millis);
     IOReturn exit();
     uint8_t findKeyInRegion(uint8_t findThisKey);
 };
 #endif
+uint8_t twos_complement(uint8_t val);

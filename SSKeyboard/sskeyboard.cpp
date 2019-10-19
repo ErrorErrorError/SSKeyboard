@@ -133,8 +133,6 @@ IOReturn SSKeyboard::checkForDevice(CFDictionaryRef matchingCFDictRef) {
         return kIOReturnNotOpen;
     }
     
-    
-    
     usbOpen = true;
     return kIOReturnSuccess;
 }
@@ -145,7 +143,7 @@ IOReturn SSKeyboard::checkThreeRegion() {
 }
 
 IOReturn SSKeyboard::sendFeatureReportPackage(uint8_t *featurePackage) {
-    return (usbOpen)? IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeFeature, featurePackage[0], featurePackage, kFeaturePackageSize) : kIOReturnNotOpen;
+    return (usbOpen)? IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeFeature, featurePackage[0], featurePackage, kPackageSize) : kIOReturnNotOpen;
 }
 
 IOReturn SSKeyboard::sendOutputReportPackage(uint8_t *outputPackage) {
@@ -175,12 +173,12 @@ bool SSKeyboard::isUsbOpen() {
     return usbOpen;
 }
 
-IOReturn SSKeyboard::setSteadyMode(uint8_t region, RGB regionColor , RGB *colorArray, bool createOutputPacket) {
+IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool createOutputPacket) {
     if (!usbOpen) {
         return kIOReturnNotOpen;
     }
     // printf("newPackage\n");
-    uint8_t *package = makeColorPackage(region, regionColor, colorArray);
+    uint8_t *package = makeColorPackage(keysArray);
     IOReturn setFeatureReturn = sendFeatureReportPackage(package);
     std::this_thread::sleep_for(chrono::milliseconds(times));
     
@@ -189,7 +187,8 @@ IOReturn SSKeyboard::setSteadyMode(uint8_t region, RGB regionColor , RGB *colorA
     }
     
     if (createOutputPacket) {
-        IOReturn setOutputReport = sendOutputReportPackage(makeOutputPackage(region));
+        Keys *region = (*(keysArray + 0));
+        IOReturn setOutputReport = sendOutputReportPackage(makeOutputPackage(region->region));
         std::this_thread::sleep_for(chrono::milliseconds(times));
 
         if (setOutputReport != kIOReturnSuccess) {
@@ -200,71 +199,104 @@ IOReturn SSKeyboard::setSteadyMode(uint8_t region, RGB regionColor , RGB *colorA
     return kIOReturnSuccess;
 }
 
-uint8_t *SSKeyboard::makeColorPackage(uint8_t region, RGB color, RGB *colorArray) {
-    uint8_t *keycodes;
+uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
     uint8_t keycodes_size;
+    Keys *region = (*(colorArray + 0));
 
-    if (region == regions[0])
+    if (region->region == regions[0])
     {
-        keycodes = modifiers;
         keycodes_size = kModifiersSize;
     }
     
-    else if (region == regions[1])
+    else if (region->region == regions[1])
     {
-        keycodes = alphanums;
         keycodes_size = kAlphanumsSize;
     }
     
-    else if (region == regions[2])
+    else if (region->region == regions[2])
     {
-        keycodes = enter;
         keycodes_size = kEnterSize;
     }
     
     else if (model == PerKeyGS65)
     {
-        keycodes = special;
         keycodes_size = kSpecialSize;
     } else {
-        keycodes = specialPerKey;
         keycodes_size = kSpecialPerKeySize;
     }
-    
-    memset(new_packet, 0, kFeaturePackageSize);
-    
-    new_packet[0] = 0x0e;
-    //new_packet[1] = 0x00;
-    new_packet[2] = region;
-    //new_packet[3] = 0x00;
-    new_packet[4] = color.r;
-    new_packet[5] = color.g;
-    new_packet[6] = color.b;
-    //new_packet[7] = 0x00;
-    //new_packet[8] = 0x00;
-    //new_packet[9] = 0x00;
-    new_packet[10] = 0x2c;
-    new_packet[11] = 0x01;
+    // This array includes the region key
+    keycodes_size += 1;
 
-    for (uint8_t i = 0; i < keycodes_size; i++)
-    {
-        uint16_t keys = 12 + 12 * i;
-        new_packet[keys] = 0x00;
-        new_packet[keys + 1] = 0x01;
-        //new_packet[arrLocation + 2] = 0x00;
-        new_packet[keys + 3] = keycodes[i];
-        new_packet[keys + 4] = colorArray[i].r;
-        new_packet[keys + 5] = colorArray[i].g;
-        new_packet[keys + 6] = colorArray[i].b;
-        //new_packet[arrLocation + 7] = 0x00;
-        //new_packet[arrLocation + 8] = 0x00;
-        //new_packet[arrLocation + 9] = 0x00;
-        new_packet[keys + 10] = 0x2c;
-        new_packet[keys + 11] = 0x01;
+    uint8_t mode_id;
+    if (region->getMode() == Steady) {
+        mode_id = 1;
+    } else if (region->getMode() == Reactive) {
+        mode_id = 8;
+    } else {
+        mode_id = 0;
     }
     
+    // This calculates the duration into two bytes
+    uint8_t *duration = new uint8_t[2];
+    toByte(region->getDuration(), duration);
+    
+    memset(new_packet, 0, kPackageSize);
+    
+    RGB regionColor = region->getMainColor();
+    RGB regionActiveColor = region->getActiveColor();
+    new_packet[0] = 0x0e;
+    new_packet[1] = 0x00;
+    new_packet[2] = region->region;
+    //new_packet[3] = 0x00;
+    new_packet[4] = regionColor.r;
+    new_packet[5] = regionColor.g;
+    new_packet[6] = regionColor.b;
+    new_packet[7] = regionActiveColor.r;
+    new_packet[8] = regionActiveColor.g;
+    new_packet[9] = regionActiveColor.b;
+    new_packet[10] = duration[0];
+    new_packet[11] = duration[1];
+    new_packet[12] = mode_id;
+    new_packet[13] = region->getMode();
+
+    for (uint8_t i = 1; i < keycodes_size; i++)
+    {
+    
+        Keys *currentKey = (*(colorArray + i));
+        uint16_t keys = 2 + (12 * i);
+        if (currentKey->getMode() == Steady) {
+            mode_id = 1;
+        } else if (currentKey->getMode() == Reactive) {
+            mode_id = 8;
+        } else {
+            mode_id = 0;
+        }
+        toByte(currentKey->getDuration(), duration);
+        
+        //new_packet[keys] = 0x00;
+        new_packet[keys + 1] = currentKey->keycode;
+        new_packet[keys + 2] = currentKey->getMainColor().r;
+        new_packet[keys + 3] = currentKey->getMainColor().g;
+        new_packet[keys + 4] = currentKey->getMainColor().b;
+        new_packet[keys + 5] = currentKey->getActiveColor().r;
+        new_packet[keys + 6] = currentKey->getActiveColor().g;
+        new_packet[keys + 7] = currentKey->getActiveColor().b;
+        new_packet[keys + 8] = duration[0];
+        new_packet[keys + 9] = duration[1];
+        new_packet[keys + 10] = mode_id;
+        new_packet[keys + 11] = currentKey->getMode();
+    }
+    
+    free(duration);
     return new_packet;
 }
+
+uint8_t twos_complement(uint8_t b)
+{
+    Byte TwosComplement = ~b + 2;
+    return TwosComplement;
+}
+
 
 IOReturn SSKeyboard::closeKeyboardPort() {
     if (!usbOpen) {
@@ -324,4 +356,20 @@ uint8_t SSKeyboard::findKeyInRegion(uint8_t findThisKey) {
         // TODO - need to implement ThreeRegion
     }
     return 0;
+}
+
+
+void SSKeyboard::toByte(uint16_t speed, uint8_t * array) {
+    uint8_t first = 0;
+    uint8_t second = 0;
+    for (int i = 0; i < 4; i++) {
+        if (i < 2) {
+            second += (speed >> (8 + (8 * i)) & 0xff);
+        } else {
+            first += (speed >> (8 + (8 * i)) & 0xff);
+        }
+    }
+    
+    (*(array)) = first;
+    (*(array + 1)) = second;
 }
