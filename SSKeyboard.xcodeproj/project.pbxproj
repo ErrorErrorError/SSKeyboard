@@ -12,6 +12,8 @@
 		1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1385114C233FAE76001E4CA6 /* sskeyboard.cpp */; };
 		1346062C234E5F670058CCA1 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A33223412BB900947195 /* IOKit.framework */; };
 		1346062D234E5F6D0058CCA1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A34923412DAE00947195 /* CoreFoundation.framework */; };
+		13794238235595F400D7B7B3 /* sskeys.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 137D97F723550688000C276B /* sskeys.h */; };
+		137D97F823550688000C276B /* sskeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 137D97F623550688000C276B /* sskeys.cpp */; };
 		13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 13851150233FAE76001E4CA6 /* sskeyboard.h */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +34,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				13794238235595F400D7B7B3 /* sskeys.h in Copy Files */,
 				13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */,
 			);
 			name = "Copy Files";
@@ -46,6 +49,8 @@
 		13460620234E5F2F0058CCA1 /* SSKeyboardTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SSKeyboardTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13460622234E5F2F0058CCA1 /* SSKeyboardTest.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = SSKeyboardTest.m; sourceTree = "<group>"; };
 		13460624234E5F2F0058CCA1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		137D97F623550688000C276B /* sskeys.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sskeys.cpp; sourceTree = "<group>"; };
+		137D97F723550688000C276B /* sskeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sskeys.h; sourceTree = "<group>"; };
 		1385114C233FAE76001E4CA6 /* sskeyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sskeyboard.cpp; sourceTree = "<group>"; };
 		13851150233FAE76001E4CA6 /* sskeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sskeyboard.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -105,6 +110,8 @@
 			children = (
 				1385114C233FAE76001E4CA6 /* sskeyboard.cpp */,
 				13851150233FAE76001E4CA6 /* sskeyboard.h */,
+				137D97F623550688000C276B /* sskeys.cpp */,
+				137D97F723550688000C276B /* sskeys.h */,
 			);
 			path = SSKeyboard;
 			sourceTree = "<group>";
@@ -199,6 +206,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				137D97F823550688000C276B /* sskeys.cpp in Sources */,
 				1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
