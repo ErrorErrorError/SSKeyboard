@@ -238,7 +238,8 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
     
     // This calculates the duration into two bytes
     uint8_t *duration = new uint8_t[2];
-    toByte(region->getDuration(), duration);
+    uint16_t speed = region->getDuration();
+    toByte(speed, duration);
     
     memset(new_packet, 0, kPackageSize);
     
