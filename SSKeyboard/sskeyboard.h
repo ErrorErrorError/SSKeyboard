@@ -242,4 +242,3 @@ public:
     uint8_t findKeyInRegion(uint8_t findThisKey);
 };
 #endif
-uint8_t twos_complement(uint8_t val);

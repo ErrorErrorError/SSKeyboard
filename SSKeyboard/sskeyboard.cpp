@@ -237,7 +237,7 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
     }
     
     // This calculates the duration into two bytes
-    uint8_t *duration = new uint8_t[2];
+    uint8_t duration[2];
     uint16_t speed = region->getDuration();
     toByte(speed, duration);
     
@@ -272,7 +272,9 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
         } else {
             mode_id = 0;
         }
-        toByte(currentKey->getDuration(), duration);
+        
+        speed = currentKey->getDuration();
+        toByte(speed, duration);
         
         //new_packet[keys] = 0x00;
         new_packet[keys + 1] = currentKey->keycode;
@@ -288,16 +290,8 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
         new_packet[keys + 11] = currentKey->getMode();
     }
     
-    free(duration);
     return new_packet;
 }
-
-uint8_t twos_complement(uint8_t b)
-{
-    Byte TwosComplement = ~b + 2;
-    return TwosComplement;
-}
-
 
 IOReturn SSKeyboard::closeKeyboardPort() {
     if (!usbOpen) {
@@ -363,14 +357,13 @@ uint8_t SSKeyboard::findKeyInRegion(uint8_t findThisKey) {
 void SSKeyboard::toByte(uint16_t speed, uint8_t * array) {
     uint8_t first = 0;
     uint8_t second = 0;
-    for (int i = 0; i < 4; i++) {
-        if (i < 2) {
-            second += (speed >> (8 + (8 * i)) & 0xff);
+    for (int i = 0; i < 3; i++) {
+        if (i < 1) {
+            first += (speed >> ((8 * i)) & 0xff);
         } else {
-            first += (speed >> (8 + (8 * i)) & 0xff);
+            second += (speed >> ((8 * i)) & 0xff);
         }
     }
-    
     (*(array)) = first;
     (*(array + 1)) = second;
 }
