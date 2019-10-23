@@ -28,35 +28,55 @@ struct RGB {
 
 // Modes for PerKey/GS65
 enum PerKeyModes {
-    Steady = 0x01,
-    //ColorShift,
-    //Breathing,
-    Reactive = 0xff,
-    Disabled = 0x03,
+    Steady,
+    ColorShift,
+    Breathing,
+    Reactive,
+    Disabled,
 };
 
 #ifdef __cplusplus
 class Keys {
 private:
     RGB mainColor = RGB();
-    PerKeyModes mode = Steady;
+    PerKeyModes mode = PerKeyModes::Steady;
     RGB activeColor = RGB();
-    uint16_t speed = 0;
     void resetModesColor();
 public:
     uint8_t keycode = 0;
     char *keyLetter;
     uint8_t region = 0;
+    uint8_t effect_id = 0;
+    uint16_t duration = 0;
     Keys();
-    Keys(uint8_t keyCode, char *letter, uint8_t location, RGB steadyColor);
-    Keys(uint8_t keyCode, char *letter, uint8_t location, RGB active, RGB rest, uint16_t duration);
+    /// Creates a key object and sets the key as steady mode
+    /// @param keyCode sets the key code of the key
+    /// @param location sets the location of the key in the region
+    /// @param steadyColor sets the steady color of the key
+    Keys(uint8_t keyCode, uint8_t location, RGB steadyColor);
+    
+    /// Creates a key object and sets the key as reactive mode
+    /// @param keyCode sets the keycode of the key
+    /// @param location sets the location of the key in the region
+    /// @param active sets the active color
+    /// @param rest sets the rest color
+    /// @param duration sets the duration of the effect
+    Keys(uint8_t keyCode, uint8_t location, RGB active, RGB rest, uint16_t duration);
+    /// Sets the key to reactive mode
+    /// @param active sets the active color to activeColor
+    /// @param rest sets the rest color to mainColor
+    /// @param duration sets the duration of the effect
     void setReactiveKey(RGB active, RGB rest, uint16_t duration);
-    void setSteadyKey(RGB steadyColors);
+    /// This method sets the key to Steady mode
+    /// @param steadyColor the steady color to assign
+    void setSteadyKey(RGB steadyColor);
+    /// Returns the main color
     RGB getMainColor();
+    /// Returns the active color
     RGB getActiveColor();
+    /// Returns the mode of the key
     PerKeyModes getMode();
-    void setDuration(uint16_t duration);
-    uint16_t getDuration();
+    /// Turns the key off
     void disableKey();
 };
 #endif

@@ -9,36 +9,38 @@
 
 #include "sskeys.h"
 Keys::Keys() {}
-Keys::Keys(uint8_t keyCode, char *letter, uint8_t location, RGB steadyColor) {
+Keys::Keys(uint8_t keyCode, uint8_t location, RGB steadyColor) {
     keycode = keyCode;
-    keyLetter = letter;
     region = location;
     mainColor = steadyColor;
-    mode = Steady;
+    mode = PerKeyModes::Steady;
+    effect_id = 0x00;
 }
 
-Keys::Keys(uint8_t keyCode, char *letter, uint8_t location, RGB active, RGB rest, uint16_t duration) {
+Keys::Keys(uint8_t keyCode, uint8_t location, RGB active, RGB rest, uint16_t duration) {
     keycode = keyCode;
-    keyLetter = letter;
     region = location;
     mainColor = rest;
     activeColor = active;
-    speed = duration;
-    mode = Reactive;
+    this->duration = duration;
+    mode = PerKeyModes::Reactive;
+    effect_id = 0x00;
 }
 
 void Keys::setReactiveKey(RGB active, RGB rest, uint16_t duration) {
     resetModesColor();
     mainColor = rest;
     activeColor = active;
-    speed = duration;
-    mode = Reactive;
+    this->duration = duration;
+    mode = PerKeyModes::Reactive;
+    effect_id = 0xff;
 }
 
 void Keys::setSteadyKey(RGB steadyColors) {
     resetModesColor();
     mainColor = steadyColors;
-    mode = Steady;
+    mode = PerKeyModes::Steady;
+    effect_id = 0x00;
 }
 
 RGB Keys::getMainColor() {
@@ -51,7 +53,7 @@ RGB Keys::getActiveColor() {
 void Keys::resetModesColor() {
     mainColor = RGB();
     activeColor = RGB();
-    speed = 0;
+    this->duration = 0;
 }
 
 PerKeyModes Keys::getMode() {
@@ -60,13 +62,6 @@ PerKeyModes Keys::getMode() {
 
 void Keys::disableKey() {
     resetModesColor();
-    mode = Disabled;
-}
-
-
-void Keys::setDuration(uint16_t duration) {
-    speed = duration;
-}
-uint16_t Keys::getDuration() {
-    return speed;
+    mode = PerKeyModes::Disabled;
+    effect_id = 0x00;
 }
