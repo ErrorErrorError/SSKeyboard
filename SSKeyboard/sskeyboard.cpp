@@ -125,7 +125,7 @@ IOReturn SSKeyboard::checkForDevice(CFDictionaryRef matchingCFDictRef) {
     }
     
     // We don't need deviceRef anymore since keyboardDevices has the reference.
-    free(deviceRef);
+    delete[] deviceRef;
     return kIOReturnSuccess;
 }
 
@@ -140,11 +140,14 @@ IOReturn SSKeyboard::sendFeatureReportPackage(uint8_t *featurePackage) {
         printf("Could not open usb port\n");
         return canOpenUSB;
     }
+    
     IOReturn reportOutput = IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeFeature, featurePackage[0], featurePackage, kPackageSize);
+    std::this_thread::sleep_for(chrono::milliseconds(times));
     if (reportOutput != kIOReturnSuccess) {
         printf("Could not send feature report\n");
         return reportOutput;
     }
+    
     IOReturn canCloseUSB = IOHIDDeviceClose(keyboardDevice, kIOHIDOptionsTypeNone);
     if (reportOutput != kIOReturnSuccess) {
         printf("Could not close usb port\n");
@@ -162,6 +165,7 @@ IOReturn SSKeyboard::sendOutputReportPackage(uint8_t *outputPackage) {
     }
     
     IOReturn reportOutput = IOHIDDeviceSetReport(keyboardDevice, kIOHIDReportTypeOutput, outputPackage[0], outputPackage, kOutputPackageSize);
+    std::this_thread::sleep_for(chrono::milliseconds(times));
     if (reportOutput != kIOReturnSuccess) {
         printf("Could not send output report\n");
         return reportOutput;
@@ -176,7 +180,7 @@ IOReturn SSKeyboard::sendOutputReportPackage(uint8_t *outputPackage) {
     return kIOReturnSuccess;
 }
 
-uint8_t *SSKeyboard::makeOutputPackage(uint8_t region) {
+void SSKeyboard::makeOutputPackage(uint8_t region, uint8_t *packet) {
     uint8_t lastByteRegion = 0;
     uint8_t index = 0;
     while (lastByteRegion == 0 && index < kRegions) {
@@ -187,19 +191,18 @@ uint8_t *SSKeyboard::makeOutputPackage(uint8_t region) {
         }
     }
     
-    static uint8_t newOutputPackage[kOutputPackageSize];
-    newOutputPackage[0] = 0x0d;
-    newOutputPackage[1] = 0x00;
-    newOutputPackage[2] = 0x02;
-    newOutputPackage[kOutputPackageSize - 1] = lastByteRegion;
-    return newOutputPackage;
+    packet[0] = 0x0d;
+    packet[1] = 0x00;
+    packet[2] = 0x02;
+    packet[kOutputPackageSize - 1] = lastByteRegion;
 }
 
 IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
-
-    uint8_t *package = makeColorPackage(keysArray);
-    IOReturn setFeatureReturn = sendFeatureReportPackage(package);
-    std::this_thread::sleep_for(chrono::milliseconds(times));
+    uint8_t *packet = new uint8_t[kPackageSize]{0};
+    makeColorPackage(keysArray, packet);
+    IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
+    
+    delete[] packet;
     
     if (setFeatureReturn != kIOReturnSuccess) {
         return setFeatureReturn;
@@ -207,9 +210,12 @@ IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
     
     if (updateKeys) {
         Keys *region = (*(keysArray));
-        IOReturn setOutputReport = sendOutputReportPackage(makeOutputPackage(region->region));
-        std::this_thread::sleep_for(chrono::milliseconds(times));
-
+        packet = new uint8_t[kOutputPackageSize]{0};
+        makeOutputPackage(region->region, packet);
+        IOReturn setOutputReport = sendOutputReportPackage(packet);
+        
+        delete[] packet;
+        
         if (setOutputReport != kIOReturnSuccess) {
             return setOutputReport;
         }
@@ -218,11 +224,10 @@ IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
     return kIOReturnSuccess;
 }
 
-uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
+void SSKeyboard::makeColorPackage(Keys **colorArray, uint8_t *new_packet) {
     uint8_t keycodes_size;
     // Region key should be the first key in the array
     Keys *regionKey = (*(colorArray));
-    uint8_t durationInBytes[2];
     uint8_t mode;
 
     if (regionKey->region == regions[0]) {
@@ -254,10 +259,7 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
         } else {
             mode = 0x0;
         }
-        
-        // Separates the duration into two bytes
-        toByte(currentKey->duration, durationInBytes);
-        
+                
         // The first key should be the the region key.
         if (i == 0) {
             new_packet[0]       = 0x0e;
@@ -275,13 +277,13 @@ uint8_t *SSKeyboard::makeColorPackage(Keys **colorArray) {
         new_packet[keys + 5]    = currentKey->getActiveColor().r;
         new_packet[keys + 6]    = currentKey->getActiveColor().g;
         new_packet[keys + 7]    = currentKey->getActiveColor().b;
-        new_packet[keys + 8]    = durationInBytes[0];
-        new_packet[keys + 9]    = durationInBytes[1];
+        // Separates the duration into two bytes
+        new_packet[keys + 8]    = currentKey->duration & 0x00ff;
+        new_packet[keys + 9]    = (currentKey->duration & 0xff00) >> 8;
         new_packet[keys + 10]   = currentKey->effect_id;
         new_packet[keys + 11]   = mode;
     }
     
-    return new_packet;
 }
 
 IOReturn SSKeyboard::exit() {
@@ -331,19 +333,4 @@ uint8_t SSKeyboard::findRegionOfKey(uint8_t findThisKey) {
         // TODO - need to implement ThreeRegion
     }
     return 0;
-}
-
-
-void SSKeyboard::toByte(uint16_t speed, uint8_t * array) {
-    uint8_t first = 0;
-    uint8_t second = 0;
-    for (int i = 0; i < 3; i++) {
-        if (i < 1) {
-            first += (speed >> ((8 * i)) & 0xff);
-        } else {
-            second += (speed >> ((8 * i)) & 0xff);
-        }
-    }
-    (*(array)) = first;
-    (*(array + 1)) = second;
 }

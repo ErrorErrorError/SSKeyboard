@@ -222,14 +222,12 @@ private:
     IOHIDManagerRef hidManagerRef;
     IOHIDDeviceRef keyboardDevice;
     enum KeyboardModels model = UnknownModel;
-    uint8_t new_packet[kPackageSize];
     IOReturn sendFeatureReportPackage(uint8_t *featurePackage);
     IOReturn sendOutputReportPackage(uint8_t *outputPackage);
-    uint8_t *makeColorPackage(Keys **colorArray);
-    uint8_t *makeOutputPackage(uint8_t region);
+    void makeColorPackage(Keys **colorArray, uint8_t *new_packet);
+    void makeOutputPackage(uint8_t region, uint8_t *packet);
     IOReturn checkForDevice(CFDictionaryRef matchingCFDictRef);
     IOReturn checkThreeRegion();
-    void toByte(uint16_t speed, uint8_t * array);
 public:
     /// This constructor initializes the IOHIDManager and attempts to find the MSI RGB Keyboard's usb hid port. If it's not found, then the keyboard model is unknown.
     SSKeyboard();
