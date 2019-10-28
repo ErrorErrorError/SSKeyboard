@@ -183,12 +183,16 @@ IOReturn SSKeyboard::sendOutputReportPackage(uint8_t *outputPackage) {
 void SSKeyboard::makeOutputPackage(uint8_t region, uint8_t *packet) {
     uint8_t lastByteRegion = 0;
     uint8_t index = 0;
-    while (lastByteRegion == 0 && index < kRegions) {
-        if (regions[index] == region) {
-            lastByteRegion = last_byte_region[index];
-        } else {
-            index++;
+    if (region != 0x0) {
+        while (lastByteRegion == 0 && index < kRegions) {
+            if (regions[index] == region) {
+                lastByteRegion = last_byte_region[index];
+            } else {
+                index++;
+            }
         }
+    } else {
+        lastByteRegion = region;
     }
     
     packet[0] = 0x0d;
@@ -197,7 +201,7 @@ void SSKeyboard::makeOutputPackage(uint8_t region, uint8_t *packet) {
     packet[kOutputPackageSize - 1] = lastByteRegion;
 }
 
-IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
+IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
     uint8_t *packet = new uint8_t[kPackageSize]{0};
     makeColorPackage(keysArray, packet);
     IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
@@ -209,9 +213,36 @@ IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
     }
     
     if (updateKeys) {
-        Keys *region = (*(keysArray));
+        Keys region = (*(keysArray));
         packet = new uint8_t[kOutputPackageSize]{0};
-        makeOutputPackage(region->region, packet);
+        makeOutputPackage(region.region, packet);
+        IOReturn setOutputReport = sendOutputReportPackage(packet);
+        
+        delete[] packet;
+        
+        if (setOutputReport != kIOReturnSuccess) {
+            return setOutputReport;
+        }
+    }
+    
+    return kIOReturnSuccess;
+
+}
+
+IOReturn SSKeyboard::sendEffectKeys(KeyEffect *effectArray, bool updateKeys) {
+    uint8_t *packet = new uint8_t[kPackageSize]{0};
+    makeEffectPackage(effectArray, packet);
+    IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
+
+    delete[] packet;
+    
+    if (setFeatureReturn != kIOReturnSuccess) {
+        return setFeatureReturn;
+    }
+    
+    if (updateKeys) {
+        packet = new uint8_t[kOutputPackageSize]{0};
+        makeOutputPackage(0x00, packet);
         IOReturn setOutputReport = sendOutputReportPackage(packet);
         
         delete[] packet;
@@ -224,17 +255,18 @@ IOReturn SSKeyboard::sendColorKeys(Keys **keysArray, bool updateKeys) {
     return kIOReturnSuccess;
 }
 
-void SSKeyboard::makeColorPackage(Keys **colorArray, uint8_t *new_packet) {
+
+void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
     uint8_t keycodes_size;
     // Region key should be the first key in the array
-    Keys *regionKey = (*(colorArray));
+    Keys regionKey = (*(colorArray));
     uint8_t mode;
 
-    if (regionKey->region == regions[0]) {
+    if (regionKey.region == regions[0]) {
         keycodes_size = kModifiersSize;
-    } else if (regionKey->region == regions[1]) {
+    } else if (regionKey.region == regions[1]) {
         keycodes_size = kAlphanumsSize;
-    } else if (regionKey->region == regions[2]) {
+    } else if (regionKey.region == regions[2]) {
         keycodes_size = kEnterSize;
     } else if (model == PerKeyGS65) {
         keycodes_size = kSpecialSize;
@@ -247,14 +279,14 @@ void SSKeyboard::makeColorPackage(Keys **colorArray, uint8_t *new_packet) {
     
     for (uint8_t i = 0; i < keycodes_size; i++)
     {
-        Keys *currentKey = (*(colorArray + i));
+        Keys currentKey = (*(colorArray + i));
         uint16_t keys = 2 + (12 * i);
 
-        if (currentKey->getMode() == PerKeyModes::Steady) {
+        if (currentKey.getMode() == PerKeyModes::Steady) {
             mode = 0x01;
-        } else if (currentKey->getMode() == PerKeyModes::Reactive) {
+        } else if (currentKey.getMode() == PerKeyModes::Reactive) {
             mode = 0x08;
-        } else if (currentKey->getMode() == PerKeyModes::Disabled){
+        } else if (currentKey.getMode() == PerKeyModes::Disabled){
             mode = 0x03;
         } else {
             mode = 0x0;
@@ -262,28 +294,129 @@ void SSKeyboard::makeColorPackage(Keys **colorArray, uint8_t *new_packet) {
                 
         // The first key should be the the region key.
         if (i == 0) {
-            new_packet[0]       = 0x0e;
-            new_packet[1]       = 0x00;
-            new_packet[keys]    = currentKey->keycode;
-            new_packet[keys+1]  = 0x00;
+            packet[0]       = 0x0e;
+            packet[1]       = 0x00;
+            packet[keys]    = currentKey.keycode;
+            packet[keys+1]  = 0x00;
         } else {
-            new_packet[keys]    = 0x00;
-            new_packet[keys+1]  = currentKey->keycode;
+            packet[keys]    = 0x00;
+            packet[keys+1]  = currentKey.keycode;
         }
         
-        new_packet[keys + 2]    = currentKey->getMainColor().r;
-        new_packet[keys + 3]    = currentKey->getMainColor().g;
-        new_packet[keys + 4]    = currentKey->getMainColor().b;
-        new_packet[keys + 5]    = currentKey->getActiveColor().r;
-        new_packet[keys + 6]    = currentKey->getActiveColor().g;
-        new_packet[keys + 7]    = currentKey->getActiveColor().b;
+        packet[keys + 2]    = currentKey.getMainColor().r;
+        packet[keys + 3]    = currentKey.getMainColor().g;
+        packet[keys + 4]    = currentKey.getMainColor().b;
+        packet[keys + 5]    = currentKey.getActiveColor().r;
+        packet[keys + 6]    = currentKey.getActiveColor().g;
+        packet[keys + 7]    = currentKey.getActiveColor().b;
         // Separates the duration into two bytes
-        new_packet[keys + 8]    = currentKey->duration & 0x00ff;
-        new_packet[keys + 9]    = (currentKey->duration & 0xff00) >> 8;
-        new_packet[keys + 10]   = currentKey->effect_id;
-        new_packet[keys + 11]   = mode;
+        packet[keys + 8]    = currentKey.duration & 0x00ff;
+        packet[keys + 9]    = (currentKey.duration & 0xff00) >> 8;
+        packet[keys + 10]   = currentKey.effect_id;
+        packet[keys + 11]   = mode;
     }
     
+}
+
+void SSKeyboard::makeEffectPackage(KeyEffect *keyEffect, uint8_t *packet) {
+    uint16_t totalDuration = 0;
+    RGB currentColor;
+    uint8_t index = 0;
+
+    packet[index + 0] = 0x0b;
+    // packet[index + 1] = 0x0;
+    
+    /// Transitions - each transition will take 8 bytes
+    for (uint8_t i = 0; i < keyEffect->getTransitionSize(); i++) {
+        
+        KeyTransition currentTransition = (*(keyEffect->getTransitions() + i));
+        index = (8 * i) + 2;
+        
+        if (i == 0) {
+            packet[index] = keyEffect->getEffectId();
+            currentColor = keyEffect->getStartColor();
+        } else {
+            packet[index] = i;
+        }
+        
+        // Calculate color difference
+        RGB colorDifference = calculateColorDelta(currentColor, currentTransition.color);
+
+        // packet[index + 1] = 0x0;
+        packet[index + 2] = colorDifference.r;
+        packet[index + 3] = colorDifference.g;
+        packet[index + 4] = colorDifference.b;
+        // packet[index + 5] = 0;
+        // Separates the duration into two bytes
+        packet[index + 6] = currentTransition.duration & 0x00ff;
+        packet[index + 7] = (currentTransition.duration & 0xff00) >> 8;
+        
+        totalDuration += currentTransition.duration;
+        currentColor = currentTransition.color;
+    }
+    
+    /// Set starting color, each value will have 2 bytes
+    index = 0x84;
+    RGB startColor = keyEffect->getStartColor();
+    packet[index + 0] = (startColor.r & 0b00001111) << 4;
+    packet[index + 1] = (startColor.r & 0b11110000) >> 4;
+    packet[index + 2] = (startColor.g & 0b00001111) << 4;
+    packet[index + 3] = (startColor.g & 0b11110000) >> 4;
+    packet[index + 4] = (startColor.b & 0b00001111) << 4;
+    packet[index + 5] = (startColor.b & 0b11110000) >> 4;
+    
+    /// Separator
+    index = 0x8a;
+    packet[index + 0] = 0xff;
+    // packet[index + 1] = 0x0;
+    
+    /// WaveMode
+    if (keyEffect->isWaveModeActive()) {
+        index = 0x8c;
+        KeyPoint point = keyEffect->getWaveOrigin();
+        /// Split the points into two separate bytes
+        packet[index + 0] = point.x & 0x00ff;
+        packet[index + 1] = (point.x & 0xff00) >> 8;
+        packet[index + 2] = point.y & 0x00ff;
+        packet[index + 3] = (point.y & 0xff00) >> 8;
+        
+        /// Radiation Control
+        index = 0x90;
+        WaveRadControl control = keyEffect->getWaveRadControl();
+        switch (control) {
+            case X:
+                packet[index + 0] = 0x01;
+                // packet[index + 1] = 0x0;
+                break;
+            case Y:
+                packet[index + 2] = 0x01;
+                packet[index + 3] = 0x0;
+
+            case XY:
+                packet[index + 0] = 0x01;
+                // packet[index + 1] = 0x0;
+                packet[index + 2] = 0x01;
+                // packet[index + 3] = 0x0;
+        }
+        
+        /// Wave Length
+        index = 0x94;
+        packet[index + 0] = keyEffect->getWaveLength() & 0x00ff;
+        packet[index + 1] = (keyEffect->getWaveLength() & 0xff00) >> 8;
+    }
+    
+    /// Transition count
+    index = 0x96;
+    packet[index + 0] = keyEffect->getTransitionSize();
+    
+    /// Total effect length
+    index = 0x98;
+    packet[index + 0] = totalDuration & 0x00ff;
+    packet[index + 1] = (totalDuration & 0xff00) >> 8;
+
+    /// Wave Direction
+    index = 0x9a;
+    packet[index] = keyEffect->getWaveDirection();
 }
 
 IOReturn SSKeyboard::exit() {
@@ -333,4 +466,24 @@ uint8_t SSKeyboard::findRegionOfKey(uint8_t findThisKey) {
         // TODO - need to implement ThreeRegion
     }
     return 0;
+}
+
+RGB SSKeyboard::calculateColorDelta(RGB start, RGB target) {
+    uint8_t deltaR = (target.r - start.r) / 10;
+    uint8_t deltaG = (target.g - start.g) / 10;
+    uint8_t deltaB = (target.b - start.b) / 10;
+
+    if (deltaR < 0) {
+        deltaR = 0xff + deltaR;
+    }
+    
+    if (deltaG < 0) {
+        deltaG = 0xff + deltaG;
+    }
+    
+    if (deltaB < 0) {
+        deltaB = 0xff + deltaB;
+    }
+
+    return {deltaR, deltaG, deltaB};
 }

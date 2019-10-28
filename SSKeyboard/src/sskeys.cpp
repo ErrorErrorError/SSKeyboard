@@ -8,7 +8,12 @@
 //
 
 #include "sskeys.h"
-Keys::Keys() {}
+Keys::Keys() {
+    keycode = 0;
+    region = 0;
+    effect_id = 0;
+    duration = 0;
+}
 Keys::Keys(uint8_t keyCode, uint8_t location, RGB steadyColor) {
     keycode = keyCode;
     region = location;
@@ -43,6 +48,12 @@ void Keys::setSteadyKey(RGB steadyColors) {
     effect_id = 0x00;
 }
 
+void Keys::setEffectKey(uint8_t _id, PerKeyModes breathOrShift) {
+    resetModesColor();
+    effect_id = _id;
+    mode = breathOrShift;
+}
+
 RGB Keys::getMainColor() {
     return mainColor;
 }
@@ -53,7 +64,7 @@ RGB Keys::getActiveColor() {
 void Keys::resetModesColor() {
     mainColor = RGB();
     activeColor = RGB();
-    this->duration = 0;
+    this->duration =0x012c;
 }
 
 PerKeyModes Keys::getMode() {
