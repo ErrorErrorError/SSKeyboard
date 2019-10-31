@@ -14,11 +14,11 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     
     SSKeyboard keyboardMgr = SSKeyboard();
-    std::cout << keyboardMgr.getKeyboardModel() << endl;
     
     RGB solidColor = {0x00, 0x00,0x00};
     uint8_t id = 1;
     
+    PerKeyModes modes = Steady;
     
     Keys keysModifiers[kModifiersSize + 1];
     Keys keyModifier = Keys(regions[0], regions[0], solidColor);
@@ -60,31 +60,20 @@ int main(int argc, const char * argv[]) {
         keysSpecial[i + 1] = key;
     }
 
-    KeyTransition transitions[5];
     
-    transitions[0] = KeyTransition();
-    transitions[1] = KeyTransition();
-    transitions[2] = KeyTransition();
-    transitions[3] = KeyTransition();
-    transitions[4] = KeyTransition();
-
     
-    RGB firstColor = {0xff, 0x00, 0xff};
+    KeyTransition transitions[3]{};
     
-    transitions[0].color = {0x0,0xff,0x00};
-    transitions[0].duration = 200;
+    RGB firstColor =  {0xff,0x00,0xe1};
     
-    transitions[1].color = {0x00,0x00,0xff};
-    transitions[1].duration = 200;
+    transitions[0].color = firstColor;
+    transitions[0].duration = 0xa8;
     
-    transitions[2].color = {0x00,0xff,0xff};
-    transitions[2].duration = 200;
+    transitions[1].color = {0xff,0xe4,0x00};
+    transitions[1].duration = 0xa8;
     
-    transitions[3].color = {0x00,0x00,0x00};
-    transitions[3].duration = 200;
-    
-    transitions[4].color = firstColor;
-    transitions[4].duration = 200;
+    transitions[2].color = {0x00,0xcc,0xff};
+    transitions[2].duration = 0xad;
 
     keyboardMgr.setSleepInMillis(200);
     keyboardMgr.sendColorKeys(keysModifiers, false);
@@ -92,9 +81,9 @@ int main(int argc, const char * argv[]) {
     keyboardMgr.sendColorKeys(keysEnter, false);
     keyboardMgr.sendColorKeys(keysSpecial, true);
 
-    KeyEffect keyEffect = KeyEffect(id, firstColor, transitions, 5);
-    keyEffect.setWaveMode({0x06c1, 0x026e}, X, WaveDirection::Outward);
-    keyboardMgr.sendEffectKeys(&keyEffect, true);
     
+    KeyEffect keyEffect = KeyEffect(id, transitions, sizeof(transitions) / sizeof(transitions[0]));
+    keyboardMgr.sendEffectKeys(&keyEffect, false);
+
     return 0;
 }

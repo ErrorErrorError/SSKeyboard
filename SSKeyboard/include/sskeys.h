@@ -33,7 +33,7 @@ struct RGB {
     uint8_t g;
     uint8_t b;
 };
-    
+
 #ifdef __cplusplus
 }
 #endif

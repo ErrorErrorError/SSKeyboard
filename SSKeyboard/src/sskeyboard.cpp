@@ -19,31 +19,31 @@ static CFMutableDictionaryRef createMatchingDictionaryForKeyboard(uint16_t vendo
     CFMutableDictionaryRef result = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     
     CFNumberRef vendorCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &vendorID);
-    if (vendorCFNumberRef) {
+    if (vendorCFNumberRef != NULL) {
         CFDictionarySetValue(result, CFSTR(kIOHIDVendorIDKey), vendorCFNumberRef);
         CFRelease(vendorCFNumberRef);
     }
     
     CFNumberRef productCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &productID);
-    if (productCFNumberRef) {
+    if (productCFNumberRef != NULL) {
         CFDictionarySetValue(result, CFSTR(kIOHIDProductIDKey), productCFNumberRef);
         CFRelease(productCFNumberRef);
     }
 
     CFNumberRef reportCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &maxFeatureReport);
-    if (reportCFNumberRef) {
+    if (reportCFNumberRef != NULL) {
         CFDictionarySetValue(result, CFSTR(kIOHIDMaxFeatureReportSizeKey), reportCFNumberRef);
         CFRelease(reportCFNumberRef);
     }
     
     CFNumberRef usagePageCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &usagePage);
-    if (usagePageCFNumberRef) {
+    if (usagePageCFNumberRef != NULL) {
         CFDictionarySetValue(result, CFSTR(kIOHIDPrimaryUsagePageKey), usagePageCFNumberRef);
         CFRelease(usagePageCFNumberRef);
     }
     
     CFNumberRef versionNumberCFNumberRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &versionNumber);
-    if (versionNumberCFNumberRef) {
+    if (versionNumberCFNumberRef != NULL) {
         CFDictionarySetValue(result, CFSTR(kIOHIDVersionNumberKey), versionNumberCFNumberRef);
         CFRelease(versionNumberCFNumberRef);
     }
@@ -70,6 +70,7 @@ SSKeyboard::SSKeyboard() {
     IOReturn isKeyboardPerKey = checkForDevice(matchingPerKey);
     if (isKeyboardPerKey == kIOReturnSuccess) {
         model = PerKey;
+        
         return;
     }
     
@@ -87,8 +88,6 @@ IOReturn SSKeyboard::checkForDevice(CFDictionaryRef matchingCFDictRef) {
         CFRelease(matchingCFDictRef);
     }
     
-    IOHIDManagerScheduleWithRunLoop(hidManagerRef, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-
     IOHIDManagerOpen(hidManagerRef, kIOHIDOptionsTypeNone);
     
     CFSetRef deviceSetRef = IOHIDManagerCopyDevices(hidManagerRef);
@@ -202,23 +201,28 @@ void SSKeyboard::makeOutputPackage(uint8_t region, uint8_t *packet) {
 }
 
 IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
-    uint8_t *packet = new uint8_t[kPackageSize]{0};
+    if (keysArray == nullptr) {
+        return kIOReturnError;
+    }
+    if (model == UnknownModel) {
+        return kIOReturnError;
+    }
+    
+    uint8_t packet[kPackageSize]{};
     makeColorPackage(keysArray, packet);
     IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
-    
-    delete[] packet;
-    
+        
     if (setFeatureReturn != kIOReturnSuccess) {
         return setFeatureReturn;
     }
     
     if (updateKeys) {
         Keys region = (*(keysArray));
-        packet = new uint8_t[kOutputPackageSize]{0};
-        makeOutputPackage(region.region, packet);
-        IOReturn setOutputReport = sendOutputReportPackage(packet);
+        uint8_t packageOutput[kOutputPackageSize]{};
+        makeOutputPackage(region.region, packageOutput);
+        IOReturn setOutputReport = sendOutputReportPackage(packageOutput);
         
-        delete[] packet;
+        // delete[] packet;
         
         if (setOutputReport != kIOReturnSuccess) {
             return setOutputReport;
@@ -229,24 +233,28 @@ IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
 
 }
 
-IOReturn SSKeyboard::sendEffectKeys(KeyEffect *effectArray, bool updateKeys) {
-    uint8_t *packet = new uint8_t[kPackageSize]{0};
-    makeEffectPackage(effectArray, packet);
-    IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
-
-    delete[] packet;
+IOReturn SSKeyboard::sendEffectKeys(KeyEffect *keyEffect, bool updateKeys) {
+    if (keyEffect == nullptr) {
+        return kIOReturnError;
+    }
     
+    if (model == UnknownModel) {
+        return kIOReturnError;
+    }
+
+    uint8_t packet[kPackageSize]{};
+    makeEffectPackage(keyEffect, packet);
+    IOReturn setFeatureReturn = sendFeatureReportPackage(packet);
+        
     if (setFeatureReturn != kIOReturnSuccess) {
         return setFeatureReturn;
     }
     
     if (updateKeys) {
-        packet = new uint8_t[kOutputPackageSize]{0};
-        makeOutputPackage(0x00, packet);
-        IOReturn setOutputReport = sendOutputReportPackage(packet);
-        
-        delete[] packet;
-        
+        uint8_t packetOutput[kOutputPackageSize]{};
+        makeOutputPackage(0x00, packetOutput);
+        IOReturn setOutputReport = sendOutputReportPackage(packetOutput);
+                
         if (setOutputReport != kIOReturnSuccess) {
             return setOutputReport;
         }
@@ -279,14 +287,14 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
     
     for (uint8_t i = 0; i < keycodes_size; i++)
     {
-        Keys currentKey = (*(colorArray + i));
+        Keys *currentKey = (colorArray + i);
         uint16_t keys = 2 + (12 * i);
 
-        if (currentKey.getMode() == PerKeyModes::Steady) {
+        if (currentKey->getMode() == PerKeyModes::Steady) {
             mode = 0x01;
-        } else if (currentKey.getMode() == PerKeyModes::Reactive) {
+        } else if (currentKey->getMode() == PerKeyModes::Reactive) {
             mode = 0x08;
-        } else if (currentKey.getMode() == PerKeyModes::Disabled){
+        } else if (currentKey->getMode() == PerKeyModes::Disabled){
             mode = 0x03;
         } else {
             mode = 0x0;
@@ -296,23 +304,23 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
         if (i == 0) {
             packet[0]       = 0x0e;
             packet[1]       = 0x00;
-            packet[keys]    = currentKey.keycode;
+            packet[keys]    = currentKey->keycode;
             packet[keys+1]  = 0x00;
         } else {
             packet[keys]    = 0x00;
-            packet[keys+1]  = currentKey.keycode;
+            packet[keys+1]  = currentKey->keycode;
         }
         
-        packet[keys + 2]    = currentKey.getMainColor().r;
-        packet[keys + 3]    = currentKey.getMainColor().g;
-        packet[keys + 4]    = currentKey.getMainColor().b;
-        packet[keys + 5]    = currentKey.getActiveColor().r;
-        packet[keys + 6]    = currentKey.getActiveColor().g;
-        packet[keys + 7]    = currentKey.getActiveColor().b;
+        packet[keys + 2]    = currentKey->getMainColor().r;
+        packet[keys + 3]    = currentKey->getMainColor().g;
+        packet[keys + 4]    = currentKey->getMainColor().b;
+        packet[keys + 5]    = currentKey->getActiveColor().r;
+        packet[keys + 6]    = currentKey->getActiveColor().g;
+        packet[keys + 7]    = currentKey->getActiveColor().b;
         // Separates the duration into two bytes
-        packet[keys + 8]    = currentKey.duration & 0x00ff;
-        packet[keys + 9]    = (currentKey.duration & 0xff00) >> 8;
-        packet[keys + 10]   = currentKey.effect_id;
+        packet[keys + 8]    = currentKey->duration & 0x00ff;
+        packet[keys + 9]    = (currentKey->duration & 0xff00) >> 8;
+        packet[keys + 10]   = currentKey->effect_id;
         packet[keys + 11]   = mode;
     }
     
@@ -320,43 +328,66 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
 
 void SSKeyboard::makeEffectPackage(KeyEffect *keyEffect, uint8_t *packet) {
     uint16_t totalDuration = 0;
-    RGB currentColor;
     uint8_t index = 0;
-
     packet[index + 0] = 0x0b;
     // packet[index + 1] = 0x0;
     
     /// Transitions - each transition will take 8 bytes
-    for (uint8_t i = 0; i < keyEffect->getTransitionSize(); i++) {
+    if (keyEffect->getTransitionSize() == 0) {
+        KeyTransition currentTransition;
+        currentTransition.color = keyEffect->getStartColor();
+        currentTransition.duration = 0x0;
+        index = 2;
         
-        KeyTransition currentTransition = (*(keyEffect->getTransitions() + i));
-        index = (8 * i) + 2;
+        packet[index] = keyEffect->getEffectId();
         
-        if (i == 0) {
-            packet[index] = keyEffect->getEffectId();
-            currentColor = keyEffect->getStartColor();
-        } else {
-            packet[index] = i;
-        }
-        
-        // Calculate color difference
-        RGB colorDifference = calculateColorDelta(currentColor, currentTransition.color);
+        /// Calculate color difference
+        RGB colorDifference = calculateColorDelta(currentTransition.color, currentTransition.color, 0);
 
         // packet[index + 1] = 0x0;
         packet[index + 2] = colorDifference.r;
         packet[index + 3] = colorDifference.g;
         packet[index + 4] = colorDifference.b;
         // packet[index + 5] = 0;
-        // Separates the duration into two bytes
+        
+        /// Separates the duration into two bytes
         packet[index + 6] = currentTransition.duration & 0x00ff;
         packet[index + 7] = (currentTransition.duration & 0xff00) >> 8;
         
         totalDuration += currentTransition.duration;
-        currentColor = currentTransition.color;
+    } else {
+        uint8_t size = keyEffect->getTransitionSize();
+        for (uint8_t i = 0; i < size; i++) {
+            KeyTransition *currentTransition = (keyEffect->getTransitions() + i);
+            index = (8 * i) + 2;
+            
+            if (i == 0) {
+                packet[index] = keyEffect->getEffectId();
+            } else {
+                packet[index] = i;
+            }
+            
+            /// Calculate color difference
+            RGB nextColor  = (i + 1 < size) ? (*(currentTransition + 1)).color : keyEffect->getStartColor();
+            RGB colorDifference = calculateColorDelta(currentTransition->color, nextColor, currentTransition->duration);
+
+            // packet[index + 1] = 0x0;
+            packet[index + 2] = colorDifference.r;
+            packet[index + 3] = colorDifference.g;
+            packet[index + 4] = colorDifference.b;
+            // packet[index + 5] = 0;
+            
+            /// Separates the duration into two bytes
+            packet[index + 6] = currentTransition->duration & 0x00ff;
+            packet[index + 7] = (currentTransition->duration & 0xff00) >> 8;
+            
+            totalDuration += currentTransition->duration;
+        }
     }
     
     /// Set starting color, each value will have 2 bytes
     index = 0x84;
+    
     RGB startColor = keyEffect->getStartColor();
     packet[index + 0] = (startColor.r & 0b00001111) << 4;
     packet[index + 1] = (startColor.r & 0b11110000) >> 4;
@@ -468,10 +499,15 @@ uint8_t SSKeyboard::findRegionOfKey(uint8_t findThisKey) {
     return 0;
 }
 
-RGB SSKeyboard::calculateColorDelta(RGB start, RGB target) {
-    uint8_t deltaR = (target.r - start.r) / 10;
-    uint8_t deltaG = (target.g - start.g) / 10;
-    uint8_t deltaB = (target.b - start.b) / 10;
+RGB SSKeyboard::calculateColorDelta(RGB start, RGB target, uint16_t duration) {
+    /// Depending on the duration of the transition it will calculate the delta of the color
+    if (duration  <= 16) {
+        duration = 16 * 2;
+    }
+    uint8_t divisible = duration / 16;
+    uint8_t deltaR = (target.r - start.r) / divisible;
+    uint8_t deltaG = (target.g - start.g) / divisible;
+    uint8_t deltaB = (target.b - start.b) / divisible;
 
     if (deltaR < 0) {
         deltaR = 0xff + deltaR;

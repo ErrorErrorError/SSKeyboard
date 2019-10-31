@@ -8,6 +8,7 @@
 
 #include "sseffect.h"
 
+using namespace std;
 KeyEffect::KeyEffect() {
     startColor = RGB();
     sizeOfTransitions = 0;
@@ -19,19 +20,24 @@ KeyEffect::KeyEffect() {
     waveDirection = Inward;
 }
 
-KeyEffect::KeyEffect(uint8_t _id, RGB initialColor, KeyTransition *keyTransition, uint8_t transitionSize) {
+KeyEffect::KeyEffect(uint8_t _id, KeyTransition *keyTransition, uint8_t transitionSize) {
     effectId = _id;
-    startColor = initialColor;
+    //if (keyTransition == nullptr) {
+    //    throw std::invalid_argument("Cannot take nullpt from keyTransition");
+    //    throw nullptr;
+    //}
+    startColor = keyTransition[0].color;
     transitions = keyTransition;
     sizeOfTransitions = transitionSize;
     waveModeActive = false;
 }
 
-void KeyEffect::setWaveMode(KeyPoint origin, WaveRadControl radControl, WaveDirection direction) {
+void KeyEffect::setWaveMode(KeyPoint origin,uint16_t waveLength, WaveRadControl radControl, WaveDirection direction) {
     waveModeActive = true;
     waveOrigin = origin;
     waveRadControl = radControl;
     waveDirection = direction;
+    this->waveLength = waveLength;
 }
 
 void KeyEffect::disableWavemode() {
@@ -43,6 +49,10 @@ void KeyEffect::setEffectId(uint8_t _id) {
 }
 
 void KeyEffect::setTransitions(KeyTransition *keyTransition, uint8_t size) {
+    if (keyTransition == nullptr) {
+        // throw std::invalid_argument("Cannot take nullpt from keyTransition");
+    }
+    startColor = keyTransition[0].color;
     transitions = keyTransition;
     sizeOfTransitions = size;
 }

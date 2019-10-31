@@ -20,6 +20,7 @@ Keys::Keys(uint8_t keyCode, uint8_t location, RGB steadyColor) {
     mainColor = steadyColor;
     mode = PerKeyModes::Steady;
     effect_id = 0x00;
+    duration = 0x012c;
 }
 
 Keys::Keys(uint8_t keyCode, uint8_t location, RGB active, RGB rest, uint16_t duration) {
@@ -46,6 +47,7 @@ void Keys::setSteadyKey(RGB steadyColors) {
     mainColor = steadyColors;
     mode = PerKeyModes::Steady;
     effect_id = 0x00;
+    duration = 0x012c;
 }
 
 void Keys::setEffectKey(uint8_t _id, PerKeyModes breathOrShift) {

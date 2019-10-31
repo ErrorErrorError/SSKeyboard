@@ -56,13 +56,28 @@ class KeyEffect {
     uint16_t waveLength = 0;
     WaveDirection waveDirection = Inward;
 public:
+    /// This is the default constructor.
     KeyEffect();
     
-    KeyEffect(uint8_t _id, RGB initialColor, KeyTransition *keyTransition, uint8_t transitionSize);
     
-    void setWaveMode(KeyPoint origin, WaveRadControl radControl, WaveDirection direction);
+    /// This constructor creates a KeyEffect with a unique ID to each effect.
+    /// @param _id the unique Id.
+    /// @param keyTransition the transitions.
+    /// @param transitionSize size of the transitions. Should not be more than 16.
+    KeyEffect(uint8_t _id, KeyTransition *keyTransition, uint8_t transitionSize);
+    
+    /// This sets the KeyEffect to wave
+    /// @param origin origin of the wave
+    /// @param waveLength length of wave
+    /// @param radControl radControl description
+    /// @param direction the direction of the wave.
+    void setWaveMode(KeyPoint origin,uint16_t waveLength, WaveRadControl radControl, WaveDirection direction);
     void disableWavemode();
     void setEffectId(uint8_t _id);
+    
+    /// <#Description#>
+    /// @param keyTransition array of transtions
+    /// @param size size of transitions. Should not be more than 16.
     void setTransitions(KeyTransition *keyTransition, uint8_t size);
     
     RGB getStartColor();
@@ -74,7 +89,6 @@ public:
     WaveRadControl getWaveRadControl();
     uint16_t getWaveLength();
     WaveDirection getWaveDirection();
-
 };
 #endif
 

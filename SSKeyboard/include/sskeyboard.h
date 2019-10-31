@@ -55,7 +55,7 @@ private:
     void makeEffectPackage(KeyEffect *keyEffect, uint8_t *packet);
     IOReturn checkForDevice(CFDictionaryRef matchingCFDictRef);
     IOReturn checkThreeRegion();
-    RGB calculateColorDelta(RGB start, RGB target);
+    RGB calculateColorDelta(RGB start, RGB target, uint16_t duration);
 public:
     /// This constructor initializes the IOHIDManager and attempts to find the MSI RGB Keyboard's usb hid port. If it's not found, then the keyboard model is unknown.
     SSKeyboard();
@@ -71,9 +71,9 @@ public:
     IOReturn sendColorKeys(Keys *keysArray, bool updateKeys);
     
     /// <#Description#>
-    /// @param effectArray <#effectArray description#>
+    /// @param keyEffect <#effectArray description#>
     /// @param updateKeys <#updateKeys description#>
-    IOReturn sendEffectKeys(KeyEffect *effectArray, bool updateKeys);
+    IOReturn sendEffectKeys(KeyEffect *keyEffect, bool updateKeys);
     
     /// Sets the time of each package in millis.
     /// @param millis time in millis
