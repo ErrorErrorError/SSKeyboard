@@ -46,8 +46,8 @@
             filePath = "SSKeyboard/src/sskeyboard.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "351"
-            endingLineNumber = "351"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
             landmarkName = "SSKeyboard::makeEffectPackage(keyEffect, packet)"
             landmarkType = "7">
          </BreakpointContent>
