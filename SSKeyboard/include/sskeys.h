@@ -13,16 +13,16 @@
 #include <stdint.h>
 
 /// Size of regions
-#define kRegions            0x04    /// 4
+constexpr uint8_t kRegions = 0x04;    /// 4
 
 /// Size of keys - GS65
-#define kModifiersSize      0x18    /// 24
-#define kAlphanumsSize      0x2a    /// 42
-#define kEnterSize          0xb     /// 11
-#define kSpecialSize        0x13    /// 19
+constexpr uint8_t kModifiersSize = 0x18;    /// 24
+constexpr uint8_t kAlphanumsSize = 0x2a;    /// 42
+constexpr uint8_t kEnterSize = 0xb;     /// 11
+constexpr uint8_t kSpecialSize = 0x13;    /// 19
 
 /// Size of keys - PerKey
-#define kSpecialPerKeySize  0x24    /// 36
+constexpr uint8_t kSpecialPerKeySize = 0x24;    /// 36
 
 #ifdef __cplusplus
 extern "C" {
