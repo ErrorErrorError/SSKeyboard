@@ -501,8 +501,8 @@ uint8_t SSKeyboard::findRegionOfKey(uint8_t findThisKey) {
 
 RGB SSKeyboard::calculateColorDelta(RGB start, RGB target, uint16_t duration) {
     /// Depending on the duration of the transition it will calculate the delta of the color
-    if (duration  <= 33) {
-        duration = 33;
+    if (duration  < 32) {
+        duration = 32;
     }
     
     uint8_t divisible = duration / 16;

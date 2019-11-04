@@ -15,10 +15,6 @@
 #include "sskeys.h"
 // #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct KeyTransition {
     struct RGB color;
     uint16_t duration;
@@ -29,19 +25,15 @@ struct KeyPoint {
     uint16_t y;
 };
 
-#ifdef __cplusplus
-}
-#endif
-
 enum WaveDirection {
     Outward = 0x0,
     Inward = 0x01
 };
 
 enum WaveRadControl {
+    XY,
     X,
-    Y,
-    XY
+    Y
 };
 
 #ifdef __cplusplus

@@ -24,19 +24,11 @@
 /// Size of keys - PerKey
 #define kSpecialPerKeySize  0x24    /// 36
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 struct RGB {
     uint8_t r;
     uint8_t g;
     uint8_t b;
 };
-
-#ifdef __cplusplus
-}
-#endif
 
 /// GS65 & PerKey Region keys
 static uint8_t regions[kRegions] = {
