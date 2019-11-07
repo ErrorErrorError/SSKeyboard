@@ -211,7 +211,6 @@ private:
     void resetModesColor();
 public:
     uint8_t keycode;
-    char *keyLetter;
     uint8_t region;
     uint8_t effect_id;
     uint16_t duration;

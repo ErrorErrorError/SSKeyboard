@@ -415,19 +415,24 @@ void SSKeyboard::makeEffectPackage(KeyEffect *keyEffect, uint8_t *packet) {
         index = 0x90;
         WaveRadControl control = keyEffect->getWaveRadControl();
         switch (control) {
-            case X:
-                packet[index + 0] = 0x01;
-                // packet[index + 1] = 0x0;
-                break;
-            case Y:
-                packet[index + 2] = 0x01;
-                packet[index + 3] = 0x0;
-
             case XY:
                 packet[index + 0] = 0x01;
+                packet[index + 1] = 0x0;
+                packet[index + 2] = 0x01;
+                packet[index + 3] = 0x0;
+                
+            case X:
+                packet[index + 0] = 0x01;
+                packet[index + 1] = 0x0;
+                // packet[index + 2] = 0x0;
+                // packet[index + 3] = 0x0;
+                break;
+            case Y:
+                // packet[index + 0] = 0x0;
                 // packet[index + 1] = 0x0;
                 packet[index + 2] = 0x01;
-                // packet[index + 3] = 0x0;
+                packet[index + 3] = 0x0;
+                
         }
         
         /// Wave Length
