@@ -50,8 +50,7 @@ class KeyEffect {
 public:
     /// This is the default constructor.
     KeyEffect();
-    
-    
+        
     /// This constructor creates a KeyEffect with a unique ID to each effect.
     /// @param _id the unique Id.
     /// @param keyTransition the transitions.

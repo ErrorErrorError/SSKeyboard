@@ -70,9 +70,9 @@ public:
     /// @return kIOReturnSuccess if it's successful.
     IOReturn sendColorKeys(Keys *keysArray, bool updateKeys);
     
-    /// <#Description#>
-    /// @param keyEffect <#effectArray description#>
-    /// @param updateKeys <#updateKeys description#>
+    /// This method receives an effect and converts it into a packet to be sent to the usb device.
+    /// @param keyEffect the effect to send
+    /// @param updateKeys restart the keyboard
     IOReturn sendEffectKeys(KeyEffect *keyEffect, bool updateKeys);
     
     /// Sets the time of each package in millis.

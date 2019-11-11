@@ -61,7 +61,7 @@ RGB KeyEffect::getStartColor() {
     return startColor;
 }
 
-KeyTransition *KeyEffect::getTransitions() {
+KeyTransition* KeyEffect::getTransitions() {
     return transitions;
 }
 uint8_t KeyEffect::getTransitionSize() {

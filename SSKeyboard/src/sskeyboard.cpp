@@ -389,12 +389,12 @@ void SSKeyboard::makeEffectPackage(KeyEffect *keyEffect, uint8_t *packet) {
     index = 0x84;
     
     RGB startColor = keyEffect->getStartColor();
-    packet[index + 0] = (startColor.r & 0b00001111) << 4;
-    packet[index + 1] = (startColor.r & 0b11110000) >> 4;
-    packet[index + 2] = (startColor.g & 0b00001111) << 4;
-    packet[index + 3] = (startColor.g & 0b11110000) >> 4;
-    packet[index + 4] = (startColor.b & 0b00001111) << 4;
-    packet[index + 5] = (startColor.b & 0b11110000) >> 4;
+    packet[index + 0] = (startColor.r & 0x0f) << 4;
+    packet[index + 1] = (startColor.r & 0xf0) >> 4;
+    packet[index + 2] = (startColor.g & 0x0f) << 4;
+    packet[index + 3] = (startColor.g & 0xf0) >> 4;
+    packet[index + 4] = (startColor.b & 0x0f) << 4;
+    packet[index + 5] = (startColor.b & 0xf0) >> 4;
     
     /// Separator
     index = 0x8a;
@@ -514,18 +514,6 @@ RGB SSKeyboard::calculateColorDelta(RGB start, RGB target, uint16_t duration) {
     uint8_t deltaR = (target.r - start.r) / divisible;
     uint8_t deltaG = (target.g - start.g) / divisible;
     uint8_t deltaB = (target.b - start.b) / divisible;
-
-    if (deltaR < 0) {
-        deltaR = 0xff + deltaR;
-    }
-    
-    if (deltaG < 0) {
-        deltaG = 0xff + deltaG;
-    }
-    
-    if (deltaB < 0) {
-        deltaB = 0xff + deltaB;
-    }
 
     return {deltaR, deltaG, deltaB};
 }
