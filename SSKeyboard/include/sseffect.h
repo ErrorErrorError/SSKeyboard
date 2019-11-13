@@ -63,7 +63,7 @@ public:
     /// @param radControl radControl description
     /// @param direction the direction of the wave.
     void setWaveMode(KeyPoint origin,uint16_t waveLength, WaveRadControl radControl, WaveDirection direction);
-    void disableWavemode();
+        
     void setEffectId(uint8_t _id);
     
     /// <#Description#>
@@ -71,14 +71,24 @@ public:
     /// @param size size of transitions. Should not be more than 16.
     void setTransitions(KeyTransition *keyTransition, uint8_t size);
     
+    void disableWavemode();
+    
     RGB getStartColor();
+    
     KeyTransition *getTransitions();
+    
     uint8_t getTransitionSize();
+    
     uint8_t getEffectId();
+    
     bool isWaveModeActive();
+    
     KeyPoint getWaveOrigin();
+    
     WaveRadControl getWaveRadControl();
+    
     uint16_t getWaveLength();
+    
     WaveDirection getWaveDirection();
 };
 #endif

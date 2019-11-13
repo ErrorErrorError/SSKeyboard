@@ -205,15 +205,15 @@ enum PerKeyModes {
 #ifdef __cplusplus
 class Keys {
 private:
+    uint8_t keycode;
+    uint8_t region;
+    uint8_t effectId;
+    uint16_t duration;
     RGB mainColor = RGB();
     PerKeyModes mode = PerKeyModes::Steady;
     RGB activeColor = RGB();
     void resetModesColor();
 public:
-    uint8_t keycode;
-    uint8_t region;
-    uint8_t effect_id;
-    uint16_t duration;
     Keys();
     /// Creates a key object and sets the key as steady mode
     /// @param keyCode sets the key code of the key
@@ -242,6 +242,14 @@ public:
         
     
     void setEffectKey(uint8_t _id, PerKeyModes breathOrShift);
+        
+    uint8_t getKeycode();
+    
+    uint8_t getRegion();
+    
+    uint8_t getEffectId();
+    
+    uint16_t getDuration();
     
     /// Returns the main color
     RGB getMainColor();

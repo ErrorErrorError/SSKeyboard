@@ -74,8 +74,9 @@ SSKeyboard::SSKeyboard() {
         return;
     }
     
-    // This is not implemented yet
-    IOReturn isKeyboardThreeRegion = checkThreeRegion();
+    // Detects if there is a three region keyboard
+    CFDictionaryRef matchingThreeRegion = createMatchingDictionaryForKeyboard(kVendorIdThreeRegion, kProductIdThreeRegion, kMaxFeatureThreeRegion, kPrimaryUsageThree, kThreeRegionVersion);
+    IOReturn isKeyboardThreeRegion = checkForDevice(matchingThreeRegion);
     if (isKeyboardThreeRegion == kIOReturnSuccess) {
         model = ThreeRegion;
         return;
@@ -126,11 +127,6 @@ IOReturn SSKeyboard::checkForDevice(CFDictionaryRef matchingCFDictRef) {
     // We don't need deviceRef anymore since keyboardDevices has the reference.
     delete[] deviceRef;
     return kIOReturnSuccess;
-}
-
-// not implemented since I still haven't had time to read values of three region based keyboard
-IOReturn SSKeyboard::checkThreeRegion() {
-    return kIOReturnError;
 }
 
 IOReturn SSKeyboard::sendFeatureReportPackage(uint8_t *featurePackage) {
@@ -201,10 +197,11 @@ void SSKeyboard::makeOutputPackage(uint8_t region, uint8_t *packet) {
 }
 
 IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
-    if (keysArray == nullptr) {
+    if (model == UnknownModel) {
         return kIOReturnError;
     }
-    if (model == UnknownModel) {
+
+    if (keysArray == nullptr) {
         return kIOReturnError;
     }
     
@@ -219,7 +216,7 @@ IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
     if (updateKeys) {
         Keys region = (*(keysArray));
         uint8_t packageOutput[kOutputPackageSize]{};
-        makeOutputPackage(region.region, packageOutput);
+        makeOutputPackage(region.getRegion(), packageOutput);
         IOReturn setOutputReport = sendOutputReportPackage(packageOutput);
         
         // delete[] packet;
@@ -233,12 +230,12 @@ IOReturn SSKeyboard::sendColorKeys(Keys *keysArray, bool updateKeys) {
 
 }
 
-IOReturn SSKeyboard::sendEffectKeys(KeyEffect *keyEffect, bool updateKeys) {
-    if (keyEffect == nullptr) {
+IOReturn SSKeyboard::sendEffect(KeyEffect *keyEffect, bool updateKeys) {
+    if (model == UnknownModel) {
         return kIOReturnError;
     }
-    
-    if (model == UnknownModel) {
+
+    if (keyEffect == nullptr) {
         return kIOReturnError;
     }
 
@@ -270,11 +267,11 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
     Keys regionKey = (*(colorArray));
     uint8_t mode;
 
-    if (regionKey.region == regions[0]) {
+    if (regionKey.getRegion() == regions[0]) {
         keycodes_size = kModifiersSize;
-    } else if (regionKey.region == regions[1]) {
+    } else if (regionKey.getRegion() == regions[1]) {
         keycodes_size = kAlphanumsSize;
-    } else if (regionKey.region == regions[2]) {
+    } else if (regionKey.getRegion() == regions[2]) {
         keycodes_size = kEnterSize;
     } else if (model == PerKeyGS65) {
         keycodes_size = kSpecialSize;
@@ -304,11 +301,11 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
         if (i == 0) {
             packet[0]       = 0x0e;
             packet[1]       = 0x00;
-            packet[keys]    = currentKey->keycode;
+            packet[keys]    = currentKey->getKeycode();
             packet[keys+1]  = 0x00;
         } else {
             packet[keys]    = 0x00;
-            packet[keys+1]  = currentKey->keycode;
+            packet[keys+1]  = currentKey->getKeycode();
         }
         
         packet[keys + 2]    = currentKey->getMainColor().r;
@@ -318,9 +315,9 @@ void SSKeyboard::makeColorPackage(Keys *colorArray, uint8_t *packet) {
         packet[keys + 6]    = currentKey->getActiveColor().g;
         packet[keys + 7]    = currentKey->getActiveColor().b;
         // Separates the duration into two bytes
-        packet[keys + 8]    = currentKey->duration & 0x00ff;
-        packet[keys + 9]    = (currentKey->duration & 0xff00) >> 8;
-        packet[keys + 10]   = currentKey->effect_id;
+        packet[keys + 8]    = currentKey->getDuration() & 0x00ff;
+        packet[keys + 9]    = (currentKey->getDuration() & 0xff00) >> 8;
+        packet[keys + 10]   = currentKey->getEffectId();
         packet[keys + 11]   = mode;
     }
     
@@ -460,6 +457,11 @@ IOReturn SSKeyboard::exit() {
         IOHIDManagerClose(hidManagerRef, kIOHIDOptionsTypeNone);
         CFRelease(hidManagerRef);
         hidManagerRef = NULL;
+    }
+    
+    if (keyboardDevice) {
+        CFRelease(keyboardDevice);
+        keyboardDevice = NULL;
     }
     
     return kIOReturnSuccess;
