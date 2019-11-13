@@ -15,20 +15,20 @@
 #include <stdlib.h>
 
 /// Package size for Feature and Output Request
-#define kPackageSize     0x20c   /// 524
-#define kOutputPackageSize      0x40    /// 64
+constexpr uint32_t kPackageSize = 0x20c;   /// 524
+constexpr uint8_t kOutputPackageSize = 0x40;    /// 64
 
 /// Per-Key & GS65 Matching
-#define kVendorId               0x1038  /// 4152
-#define kProductId              0x1122  /// 4386
-#define kMaxFeatureReportSize   0x20c   /// 524
-#define kPrimaryUsagePage       0xffc0  /// 65472
+constexpr uint32_t kVendorId = 0x1038;  /// 4152
+constexpr uint32_t kProductId = 0x1122;  /// 4386
+constexpr uint32_t kMaxFeatureReportSize = 0x20c;   /// 524
+constexpr uint32_t kPrimaryUsagePage = 0xffc0;  /// 65472
 
 /// GS65 Matching
-#define kGS65VersionNumber      0x229   /// 553
+constexpr uint32_t kGS65VersionNumber = 0x229;  /// 553
 
 /// Per-Key Matching
-#define kPerKeyVersionNumber    0x230   /// 560
+constexpr uint32_t kPerKeyVersionNumber = 0x230;   /// 560
 
 /// TODO Three Region Matching
 
