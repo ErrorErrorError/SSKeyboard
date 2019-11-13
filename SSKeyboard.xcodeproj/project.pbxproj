@@ -7,47 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1304F70E2366500300FBCD6A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1304F70D2366500300FBCD6A /* main.cpp */; };
 		1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1385114C233FAE76001E4CA6 /* sskeyboard.cpp */; };
 		1346062C234E5F670058CCA1 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A33223412BB900947195 /* IOKit.framework */; };
 		1346062D234E5F6D0058CCA1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A34923412DAE00947195 /* CoreFoundation.framework */; };
 		135D80CE2362971300F0A9E6 /* sseffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 135D80CC2362971300F0A9E6 /* sseffect.cpp */; };
 		13794238235595F400D7B7B3 /* sskeys.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 137D97F723550688000C276B /* sskeys.h */; };
 		137D97F823550688000C276B /* sskeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 137D97F623550688000C276B /* sskeys.cpp */; };
-		13B1991E236650ED0094268E /* libSSKeyboard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13460618234E5F230058CCA1 /* libSSKeyboard.a */; };
-		13B19921236650F40094268E /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A34923412DAE00947195 /* CoreFoundation.framework */; };
-		13B19922236650FB0094268E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1302A33223412BB900947195 /* IOKit.framework */; };
 		13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 13851150233FAE76001E4CA6 /* sskeyboard.h */; };
+		13C3EF34237C643800156750 /* ssregion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13C3EF32237C643800156750 /* ssregion.cpp */; };
+		13C3EF35237C659600156750 /* ssregion.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 13C3EF33237C643800156750 /* ssregion.h */; };
 		13D1BA822364F33000DC0E72 /* sseffect.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 135D80CD2362971300F0A9E6 /* sseffect.h */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		13B1991F236650ED0094268E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1368D30E233F9A1F00CE1F4D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 13460617234E5F230058CCA1;
-			remoteInfo = SSKeyboard;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		1304F7092366500300FBCD6A /* Copy Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			name = "Copy Files";
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		13B633E6234E615D0094FCC9 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				13C3EF35237C659600156750 /* ssregion.h in Copy Files */,
 				13D1BA822364F33000DC0E72 /* sseffect.h in Copy Files */,
 				13794238235595F400D7B7B3 /* sskeys.h in Copy Files */,
 				13B633E7234E61760094FCC9 /* sskeyboard.h in Copy Files */,
@@ -60,8 +39,6 @@
 /* Begin PBXFileReference section */
 		1302A33223412BB900947195 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		1302A34923412DAE00947195 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		1304F70B2366500300FBCD6A /* SSKeyboardTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SSKeyboardTest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1304F70D2366500300FBCD6A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		13460618234E5F230058CCA1 /* libSSKeyboard.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSSKeyboard.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		135D80CC2362971300F0A9E6 /* sseffect.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sseffect.cpp; sourceTree = "<group>"; };
 		135D80CD2362971300F0A9E6 /* sseffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sseffect.h; sourceTree = "<group>"; };
@@ -69,19 +46,11 @@
 		137D97F723550688000C276B /* sskeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sskeys.h; sourceTree = "<group>"; };
 		1385114C233FAE76001E4CA6 /* sskeyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sskeyboard.cpp; sourceTree = "<group>"; };
 		13851150233FAE76001E4CA6 /* sskeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sskeyboard.h; sourceTree = "<group>"; };
+		13C3EF32237C643800156750 /* ssregion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ssregion.cpp; sourceTree = "<group>"; };
+		13C3EF33237C643800156750 /* ssregion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssregion.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1304F7082366500300FBCD6A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				13B19921236650F40094268E /* CoreFoundation.framework in Frameworks */,
-				13B1991E236650ED0094268E /* libSSKeyboard.a in Frameworks */,
-				13B19922236650FB0094268E /* IOKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13460616234E5F230058CCA1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -103,22 +72,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		1304F70C2366500300FBCD6A /* SSKeyboardTest */ = {
-			isa = PBXGroup;
-			children = (
-				1304F70D2366500300FBCD6A /* main.cpp */,
-			);
-			path = SSKeyboardTest;
-			sourceTree = "<group>";
-		};
 		1368D30D233F9A1F00CE1F4D = {
 			isa = PBXGroup;
 			children = (
 				13851144233FAE6E001E4CA6 /* SSKeyboard */,
-				1304F70C2366500300FBCD6A /* SSKeyboardTest */,
 				1302A320234129D600947195 /* Frameworks */,
 				13460618234E5F230058CCA1 /* libSSKeyboard.a */,
-				1304F70B2366500300FBCD6A /* SSKeyboardTest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -137,6 +96,7 @@
 				137D97F623550688000C276B /* sskeys.cpp */,
 				1385114C233FAE76001E4CA6 /* sskeyboard.cpp */,
 				135D80CC2362971300F0A9E6 /* sseffect.cpp */,
+				13C3EF32237C643800156750 /* ssregion.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -147,6 +107,7 @@
 				13851150233FAE76001E4CA6 /* sskeyboard.h */,
 				137D97F723550688000C276B /* sskeys.h */,
 				135D80CD2362971300F0A9E6 /* sseffect.h */,
+				13C3EF33237C643800156750 /* ssregion.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -154,24 +115,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1304F70A2366500300FBCD6A /* SSKeyboardTest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1304F70F2366500300FBCD6A /* Build configuration list for PBXNativeTarget "SSKeyboardTest" */;
-			buildPhases = (
-				1304F7072366500300FBCD6A /* Sources */,
-				1304F7082366500300FBCD6A /* Frameworks */,
-				1304F7092366500300FBCD6A /* Copy Files */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				13B19920236650ED0094268E /* PBXTargetDependency */,
-			);
-			name = SSKeyboardTest;
-			productName = SSKeyboardTest;
-			productReference = 1304F70B2366500300FBCD6A /* SSKeyboardTest */;
-			productType = "com.apple.product-type.tool";
-		};
 		13460617234E5F230058CCA1 /* SSKeyboard */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13460619234E5F230058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboard" */;
@@ -199,9 +142,6 @@
 				LastUpgradeCheck = 1030;
 				ORGANIZATIONNAME = ErrorErrorError;
 				TargetAttributes = {
-					1304F70A2366500300FBCD6A = {
-						CreatedOnToolsVersion = 11.1;
-					};
 					13460617234E5F230058CCA1 = {
 						CreatedOnToolsVersion = 10.3;
 						LastSwiftMigration = 1030;
@@ -222,20 +162,11 @@
 			projectRoot = "";
 			targets = (
 				13460617234E5F230058CCA1 /* SSKeyboard */,
-				1304F70A2366500300FBCD6A /* SSKeyboardTest */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1304F7072366500300FBCD6A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1304F70E2366500300FBCD6A /* main.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13460615234E5F230058CCA1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -243,42 +174,13 @@
 				137D97F823550688000C276B /* sskeys.cpp in Sources */,
 				1346062B234E5F620058CCA1 /* sskeyboard.cpp in Sources */,
 				135D80CE2362971300F0A9E6 /* sseffect.cpp in Sources */,
+				13C3EF34237C643800156750 /* ssregion.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		13B19920236650ED0094268E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 13460617234E5F230058CCA1 /* SSKeyboard */;
-			targetProxy = 13B1991F236650ED0094268E /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		1304F7102366500300FBCD6A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FYT4JTMSQ8;
-				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		1304F7112366500300FBCD6A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FYT4JTMSQ8;
-				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		1346061A234E5F230058CCA1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -440,15 +342,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1304F70F2366500300FBCD6A /* Build configuration list for PBXNativeTarget "SSKeyboardTest" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1304F7102366500300FBCD6A /* Debug */,
-				1304F7112366500300FBCD6A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		13460619234E5F230058CCA1 /* Build configuration list for PBXNativeTarget "SSKeyboard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
